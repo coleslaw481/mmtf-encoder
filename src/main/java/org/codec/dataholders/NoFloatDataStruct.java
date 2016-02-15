@@ -9,6 +9,7 @@ import org.apache.commons.beanutils.BeanUtils;
 
 public class NoFloatDataStruct extends NoFloatDataStructBean implements CoreSingleStructure {
 
+	@SuppressWarnings("static-access")
 	public BioBean findDataAsBean() throws IllegalAccessException, InvocationTargetException {
 		// Cast this to the pure data
 		NoFloatDataStructBean newData = new NoFloatDataStructBean();

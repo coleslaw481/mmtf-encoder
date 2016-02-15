@@ -255,7 +255,6 @@ public class EncoderUtils {
 		ArrayList<Integer> cartnZ = (ArrayList<Integer>) inStruct.get_atom_site_Cartn_zInt();
 
 		// Get the number of models
-		int numModels = inStruct.getNumModels();
 		inStruct.set_atom_site_Cartn_xInt(deltaComp.compressIntArray(cartnX));
 		inStruct.set_atom_site_Cartn_yInt(deltaComp.compressIntArray(cartnY));
 		inStruct.set_atom_site_Cartn_zInt(deltaComp.compressIntArray(cartnZ));		

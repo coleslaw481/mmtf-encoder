@@ -20,7 +20,6 @@ import org.biojava.nbio.structure.JournalArticle;
 import org.biojava.nbio.structure.PDBCrystallographicInfo;
 import org.biojava.nbio.structure.PDBHeader;
 import org.biojava.nbio.structure.ResidueNumber;
-import org.biojava.nbio.structure.SSBond;
 import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.StructureException;
 import org.biojava.nbio.structure.StructureIO;
@@ -544,7 +543,6 @@ public class CreateBasicStructure {
 		List<String> outString = new ArrayList<String>(arraySize);
 		GroupType gType = g.getType();
 		// A string indicating if it is HETARM or ATOM
-		int i = 0;
 		String gS = gType.toString();
 		String gss = myMap.get(gS);
 		// A
@@ -564,7 +562,6 @@ public class CreateBasicStructure {
 		List<String> outString = new ArrayList<String>(arraySize);
 		GroupType gType = atomList.get(0).getGroup().getType();
 		// A string indicating if it is HETARM or ATOM
-		int i = 0;
 		String gS = gType.toString();
 		String gss = myMap.get(gS);
 		// A
@@ -636,15 +633,8 @@ public class CreateBasicStructure {
 		//		outGroup.setBondLengths(bondDist);
 		outGroup.setBondIndices(bondList);
 	}
-
-	private List<Integer> intLToList(int[] ints){
-		List<Integer> intList = new ArrayList<Integer>();
-		for (int index = 0; index < ints.length; index++)
-		{
-			intList.add(ints[index]);
-		}
-		return intList;
-	}
+	
+	
 	private void updateStruct(Atom a, String chain_id, String res_id,
 			ResidueNumber res_num, Chain c, Group g) {
 

@@ -11,6 +11,7 @@ import org.codec.dataholders.NoFloatDataStruct;
 
 public class CompressDoubles implements BioCompressor {
 
+	@SuppressWarnings("static-access")
 	public CoreSingleStructure compresStructure(CoreSingleStructure coress) throws IllegalAccessException, InvocationTargetException {
 		//  Take in the appropriate arrays 
 		BeanUtils bu = new BeanUtils();

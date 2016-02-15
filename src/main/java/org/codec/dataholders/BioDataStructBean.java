@@ -1,9 +1,7 @@
 package org.codec.dataholders;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class BioDataStructBean extends NonAtomDataStruct implements BioBean {
 	// A unique identifier for each atom position_

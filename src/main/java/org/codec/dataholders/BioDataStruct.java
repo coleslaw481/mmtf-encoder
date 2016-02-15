@@ -1,16 +1,12 @@
 package org.codec.dataholders;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.biojava.nbio.structure.AminoAcidImpl;
@@ -54,6 +50,7 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 
 	
 	//// ADD THE FUNCTIONS REQUIRED
+	@SuppressWarnings("static-access")
 	public BioDataStructBean findDataAsBean() throws IllegalAccessException, InvocationTargetException{
 		// Cast this to the pure data
 		BioDataStructBean newData = new BioDataStructBean();
@@ -143,11 +140,8 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
         	
         }
 
-    	Element my_ele = Element.R;
     	a.setElement(Element.valueOfIgnoreCase(get_atom_site_symbol().get(i)));
-    	
-        // This data item is an author defined alternative to the value of _atom_site.label_atom_id. This item holds the PDB atom name.
-//        a.setName((String) get_atom_site_auth_atom_id().get(i));
+ 
         
         // This item is a uniquely identifies for each alternative site for this atom position.
         a.setAltLoc(get_atom_site_label_alt_id().get(i).toString().charAt(0));
@@ -155,8 +149,6 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
         // NOW LET'S CONSIDER GROUP LEVEL DATA
         // This data item is a place holder for the tags used by the PDB to identify coordinate records (e.g. ATOM or HETATM).        
         String group_type = (String) get_atom_site_group_PDB().get(i);
-        // This data item is a reference to _entity.id defined in the ENTITY category. This item is used to identify chemically distinct portions of the molecular structure (e.g. polymer chains, ligands, solvent).
-//        String ent_type = (String) my_data.get_atom_site_label_entity_id().get(i);
         Group new_g = null;
 		if (group_type.equals("ATOM".hashCode())){
 		new_g = new AminoAcidImpl();
@@ -232,25 +224,14 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		return hashMap;
 	}
 
-	public void setDataAsHashMap(HashMap<String, ArrayList> hmap) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void setDataAsBioJava(Structure in_struct) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	public int findNumAtoms() {
-		// TODO Auto-generated method stub
 		return get_atom_site_Cartn_x().size();
 	}
 	
 	private BioDataStruct getBioDataStructFromPDBId(String input_id) throws IOException, StructureException {
 		AtomCache cache = new AtomCache();
 		cache.setUseMmCif(true);
-		cache.setAutoFetch(false);
 		FileParsingParameters params = cache.getFileParsingParams();
 		params.setLoadChemCompInfo(true);
 		params.setCreateAtomBonds(true);
@@ -327,18 +308,14 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		outString.add(g.getPDBName());
 		GroupType gType = g.getType();
 		// A string indicating if it is HETARM or ATOM
-		int i = 0;
 		String gS = gType.toString();
 		String gss = myMap.get(gS);
 		outString.add(gss);
 		for (Atom a: g.getAtoms()){
 			outString.add(a.getElement().toString());
-			i+=1;
 		}
-		i = 0;
 		for (Atom a: g.getAtoms()){
 			outString.add(a.getName());
-			i+=1;
 		}
 		return outString;
 	}

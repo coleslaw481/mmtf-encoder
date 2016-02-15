@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.StructureException;
 import org.codec.dataholders.PDBGroup;
 import org.codec.dataholders.CreateBasicStructure;

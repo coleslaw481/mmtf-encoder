@@ -2,7 +2,6 @@ package org.codec.arraycompressors;
 
 import java.util.ArrayList;
 
-import org.codec.dataholders.CoreSingleStructure;
 
 public class FindDeltas implements IntArrayCompressor {
 
