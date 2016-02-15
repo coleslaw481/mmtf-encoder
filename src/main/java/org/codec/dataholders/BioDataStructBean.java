@@ -3,8 +3,13 @@ package org.codec.dataholders;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A bean to store the information about the protein structure
+ * @author abradley
+ *
+ */
 public class BioDataStructBean extends NonAtomDataStruct implements BioBean {
-	// A unique identifier for each atom position_
+
 	public List<Integer> get_atom_site_id() {
 		return _atom_site_id;
 	}
@@ -12,7 +17,6 @@ public class BioDataStructBean extends NonAtomDataStruct implements BioBean {
 		this._atom_site_id = _atom_site_id;
 	}
 	private List<Integer> _atom_site_id =  new ArrayList<Integer>();
-	// Atom symbol
 	public List<Double> get_atom_site_Cartn_x() {
 		return _atom_site_Cartn_x;
 	}
@@ -67,6 +71,7 @@ public class BioDataStructBean extends NonAtomDataStruct implements BioBean {
 	public void setInterGroupBondInds(List<Integer> interGroupBondInds) {
 		this.interGroupBondInds = interGroupBondInds;
 	}
+	// Coordinate infroamtion
 	protected List<Double> _atom_site_Cartn_x = new ArrayList<Double>();
 	protected List<Double> _atom_site_Cartn_y = new ArrayList<Double>();
 	protected List<Double> _atom_site_Cartn_z = new ArrayList<Double>();

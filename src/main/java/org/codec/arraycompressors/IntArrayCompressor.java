@@ -4,6 +4,10 @@ import java.util.ArrayList;
 
 
 public interface IntArrayCompressor {
-	// WE DO WANT SPECIFICALLY AN ARRAYLIST HERE
+	/**
+	 * Generic function to compress an integer array
+	 * @param inArray
+	 * @return
+	 */
 	public ArrayList<Integer> compressIntArray(ArrayList<Integer> inArray);
 }

@@ -7,6 +7,11 @@ import java.util.Map;
 
 import org.codec.dataholders.PDBGroup;
 
+/**
+ * A bean to store C-Alpha / DNA backbone and ligand information
+ * @author abradley
+ *
+ */
 public class CalphaBean {
 	private int numAtoms = 0;
 	// Convert this information

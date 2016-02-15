@@ -1,5 +1,11 @@
 package org.codec.dataholders;
 
+
+/**
+ * A basic class to hold the basic information about a protein
+ * @author abradley
+ *
+ */
 public class CoreDataStruct {
 	// The core data in all modules
 	protected String pdbCode = null;	

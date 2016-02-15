@@ -2,12 +2,16 @@ package org.codec.arraycompressors;
 
 import java.util.ArrayList;
 
-
+/**
+ * Class to encode an integer array with deltas
+ * @author abradley
+ *
+ */
 public class FindDeltas implements IntArrayCompressor {
 
+
 	public ArrayList<Integer> compressIntArray(ArrayList<Integer> inArray) {
-		// TODO Auto-generated method stub
-		// Function that getd th 
+		// 
     	ArrayList<Integer> outArray =  new ArrayList<Integer>();
 		int old_int = 0;
 	    for (int i = 0; i < inArray.size(); i++) {

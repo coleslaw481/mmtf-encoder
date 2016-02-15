@@ -172,7 +172,6 @@ public class EncoderUtils {
 		DataOutputStream dos = new DataOutputStream(baos);
 		for(int i: values)
 		{
-			// FIXME Check it fits??
 			dos.writeByte(i);
 		}
 		return baos.toByteArray();

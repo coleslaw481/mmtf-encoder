@@ -5,6 +5,12 @@ import java.util.Map;
 
 import org.codec.dataholders.PDBGroup;
 
+/**
+ * A bean to store C-Alpha / DNA backbone and ligand information - in a format that can 
+ * then be efficiently sent as messagepack
+ * @author abradley
+ *
+ */
 public class CalphaDistBean {
 	// The list of sequence information
 	private  Map<Integer, PDBGroup> groupMap = new HashMap<Integer, PDBGroup>();

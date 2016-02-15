@@ -9,6 +9,11 @@ import org.codec.dataholders.BioDataStruct;
 import org.codec.dataholders.CoreSingleStructure;
 import org.codec.dataholders.NoFloatDataStruct;
 
+/**
+ * Class to compress a structure by turning doubles to ints
+ * @author abradley
+ *
+ */
 public class CompressDoubles implements BioCompressor {
 
 	@SuppressWarnings("static-access")
@@ -30,6 +35,12 @@ public class CompressDoubles implements BioCompressor {
 		return noFloatDataS;
 	}
 	
+	/**
+	 * Function to return an int array from a float array
+	 * @param inArray
+	 * @param multiplier - the multiplication factor for conversion
+	 * @return
+	 */
 	private List<Integer> getIntArrayFromFloat(List<Float> inArray, float multiplier) {
 		// Initialise the out array
 		List<Integer> outArray = new ArrayList<Integer>(inArray.size());
@@ -41,7 +52,12 @@ public class CompressDoubles implements BioCompressor {
 		
 	}
 
-	// Class to take an arraylist of Doubles and compres them
+	/**
+	 * Function to return an int array from a double array
+	 * @param inArray
+	 * @param multiplier
+	 * @return
+	 */
 	private List<Integer> getIntArrayFromDouble(List<Double> inArray, Double multiplier){
 		// Initialise the out array
 		List<Integer> outArray = new ArrayList<Integer>(inArray.size());

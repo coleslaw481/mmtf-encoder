@@ -2,13 +2,17 @@ package org.codec.arraycompressors;
 
 import java.util.ArrayList;
 
+/**
+ * Class to run length encode an integer array
+ * @author abradley
+ *
+ */
 public class RunLengthEncode implements IntArrayCompressor  {
+
 
 	public ArrayList<Integer> compressIntArray(ArrayList<Integer> inArray) {
 
 		ArrayList<Integer> outArray =  new ArrayList<Integer>();
-
-
 		int oldVal = 0;
 		boolean inSwitch = false;
 		int counter = 0;

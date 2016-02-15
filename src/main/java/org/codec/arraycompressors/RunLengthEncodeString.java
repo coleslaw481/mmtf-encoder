@@ -2,9 +2,15 @@ package org.codec.arraycompressors;
 
 import java.util.ArrayList;
 
+/**
+ * Class to run length encode a string array
+ * @author abradley
+ *
+ */
 public class RunLengthEncodeString implements StringArrayCompressor{
+	
+
 	public ArrayList<String> compressStringArray(ArrayList<String> inArray) {
-		// TODO Auto-generated method stub
     	ArrayList<String> outArray =  new ArrayList<String>();
     	String oldVal = "";
     	int counter = 0;

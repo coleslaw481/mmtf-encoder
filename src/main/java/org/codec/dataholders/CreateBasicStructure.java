@@ -34,20 +34,24 @@ import org.biojava.nbio.structure.xtal.SpaceGroup;
 import org.codec.dataholders.BioAssemblyInfoNew;
 import org.codec.dataholders.BiologicalAssemblyTransformationNew;
 import org.codec.dataholders.PDBGroup;
-
+import org.codec.dataholders.CodeHolders;
 
 
 public class CreateBasicStructure {
-	// First create the bioDS
+	
+	// Instances availble to the class of the main, calpha and header data structures
 	private BioDataStruct bioStruct = new BioDataStruct();
 	private CalphaBean calphaStruct = new CalphaBean();
 	private HeaderBean headerStruct = new HeaderBean();
+	// A class to store encoding information
+	private CodeHolders codeHolder = new CodeHolders();
 
+	
 	public BioDataStruct getBioStruct() {
 		return bioStruct;
 	}
 
-
+	
 	public void setBioStruct(BioDataStruct bioStruct) {
 		this.bioStruct = bioStruct;
 	}
@@ -71,7 +75,8 @@ public class CreateBasicStructure {
 	public void setHeaderStruct(HeaderBean headerStruct) {
 		this.headerStruct = headerStruct;
 	}
-	// Function to update the BioDataStruct for a given 
+	
+	// A map for the different names of groups
 	private static final Map<String, String> myMap;
 	static {
 		Map<String, String> aMap = new HashMap<String, String>();
@@ -81,22 +86,15 @@ public class CreateBasicStructure {
 		myMap = Collections.unmodifiableMap(aMap);
 	}
 
-	private static final Map<String, Integer> dsspMap;
-	static {
-		Map<String, Integer> aMap = new HashMap<String, Integer>();
-		//		aMap.put(key, value);
-		aMap.put("pi Helix", 0);
-		aMap.put("Bend", 1);
-		aMap.put("alpha Helix",2);
-		aMap.put("Extended", 3);
-		aMap.put("3-10 Helix", 4);
-		aMap.put("Bridge", 5);
-		aMap.put("Turn", 6);
-		aMap.put("Coil",7);
-		aMap.put("NA", -1);
-		dsspMap = Collections.unmodifiableMap(aMap);
-	}
 
+
+	/**
+	 * Helper function to generate a main, calpha and header data form a PDB id
+	 * @param input_id
+	 * @param bioStructMap
+	 * @throws IOException
+	 * @throws StructureException
+	 */
 	public void createFromJavaStruct(String input_id, Map<Integer, PDBGroup> bioStructMap) throws IOException, StructureException{		
 		// Get the structure from here
 		Structure bioJavaStruct = StructureIO.getStructure(input_id);
@@ -104,6 +102,13 @@ public class CreateBasicStructure {
 	}
 
 
+	/**
+	 * Function to generate a main, calpha and header data form a biojava structure
+	 * @param bioJavaStruct
+	 * @param bioStructMap
+	 * @throws IOException
+	 * @throws StructureException
+	 */
 	public void genFromJs(Structure bioJavaStruct, Map<Integer, PDBGroup> bioStructMap) throws IOException, StructureException{
 		SecStrucCalc ssp = new SecStrucCalc();
 		try{
@@ -308,11 +313,11 @@ public class CreateBasicStructure {
 					SecStrucState props = (SecStrucState) g.getProperty("secstruc");
 					//
 					if(props==null){
-						bioStruct.getSecStruct().add(dsspMap.get("NA"));
+						bioStruct.getSecStruct().add(codeHolder.dsspMap.get("NA"));
 					}
 					else{
 						//						System.out.println(dsspMap.get(props.getType().name));
-						bioStruct.getSecStruct().add(dsspMap.get(props.getType().name));
+						bioStruct.getSecStruct().add(codeHolder.dsspMap.get(props.getType().name));
 					}
 					// Now add the residue sequnece number
 					bioStruct.get_atom_site_auth_seq_id().add(res_num.getSeqNum());
@@ -439,9 +444,15 @@ public class CreateBasicStructure {
 		return theseAtoms;
 	}
 
-
+	/**
+	 * Function to add a new calpha / phosophate / ligand atom
+	 * @param a
+	 * @param g
+	 * @param props
+	 * @param res_num
+	 * @param thisRes
+	 */
 	private void addCalpha(Atom a, Group g, SecStrucState props, ResidueNumber res_num, int thisRes) {
-
 		calphaStruct.setNumAtoms(calphaStruct.getNumAtoms()+1); 
 		calphaStruct.getCartn_x().add((int) (a.getX()*1000));
 		calphaStruct.getCartn_y().add((int) (a.getY()*1000));
@@ -452,25 +463,35 @@ public class CreateBasicStructure {
 		// Now set the sec structure
 		//
 		if(props==null){
-			calphaStruct.getSecStruct().add(dsspMap.get("NA"));
+			calphaStruct.getSecStruct().add(codeHolder.dsspMap.get("NA"));
 
 		}
 		else{
-			calphaStruct.getSecStruct().add(dsspMap.get(props.getType().name));
+			calphaStruct.getSecStruct().add(codeHolder.dsspMap.get(props.getType().name));
 		}
 
 	}
 
-
+	
+	/**
+	 * Function to find the atomic charge information
+	 * @param g
+	 * @param outGroup
+	 */
 	private void getCharges(Group g, PDBGroup outGroup) {
 		for(Atom a: g.getAtoms()){
 			outGroup.getAtomCharges().add((int) a.getCharge());
 		}
 
-
 	}
 
 
+	/**
+	 * Function to generate a serializable biotransformation for storing
+	 * in the messagepack
+	 * @param header
+	 * @return
+	 */
 	private Map<Integer, BioAssemblyInfoNew> transformBioAssembly(PDBHeader header) {
 		// Here we need to iterate through and get the chain ids and the matrices
 		Map<Integer, BioAssemblyInfo> inputBioAss = header.getBioAssemblies();
@@ -528,6 +549,11 @@ public class CreateBasicStructure {
 	}
 
 
+	/**
+	 * Function to find a hash code from a list of strings
+	 * @param strings
+	 * @return
+	 */
 	private int getHashFromStringList(List<String> strings){
 		int prime = 31;
 		int result = 1;
@@ -537,6 +563,12 @@ public class CreateBasicStructure {
 		}
 		return result;
 	}
+
+	/**
+	 * Function to find the atomic information from a group
+	 * @param g
+	 * @return
+	 */
 	private List<String> getAtomInfo(Group g){
 		int numAtoms = g.getAtoms().size();
 		int arraySize = numAtoms*2+2;
@@ -556,6 +588,11 @@ public class CreateBasicStructure {
 	}
 
 
+	/**
+	 * Function to find the atomic information from a list of Atoms
+	 * @param atomList
+	 * @return
+	 */
 	private List<String> getAtomInfo(List<Atom> atomList){
 		int numAtoms = atomList.size();
 		int arraySize = numAtoms*2+2;
@@ -575,7 +612,12 @@ public class CreateBasicStructure {
 	}
 
 
-
+	/**
+	 * Function to find bonds between groups
+	 * @param g
+	 * @param totAtoms
+	 * @param atomCounter
+	 */
 	private void getInterGroupBond(Group g, List<Atom> totAtoms, int atomCounter){
 		//, List<Integer> bondOrders, List<Integer> bondInds
 		List<Atom> atoms = g.getAtoms();
@@ -602,6 +644,12 @@ public class CreateBasicStructure {
 		}
 
 	}
+
+	/**
+	 * Function to generate lists for the bonds in the group
+	 * @param g
+	 * @param outGroup
+	 */
 	private void createBondList(Group g, PDBGroup outGroup) {
 		List<Atom> atoms = g.getAtoms();
 		int n = atoms.size();
@@ -609,8 +657,8 @@ public class CreateBasicStructure {
 			System.out.println("creating empty bond list");
 		}
 
+		// Lists to hold bond indices and orders
 		List<Integer> bondList = new ArrayList<Integer>();
-		//		List<Integer> bondDist = new ArrayList<Integer>();
 		List<Integer> bondOrder = new ArrayList<Integer>();
 
 		for (int i = 0; i < n; i++) {
@@ -630,11 +678,19 @@ public class CreateBasicStructure {
 			}
 		}
 		outGroup.setBondOrders(bondOrder);
-		//		outGroup.setBondLengths(bondDist);
 		outGroup.setBondIndices(bondList);
 	}
-	
-	
+
+
+	/**
+	 * Function to update the structure with this atomic information
+	 * @param a
+	 * @param chain_id
+	 * @param res_id
+	 * @param res_num
+	 * @param c
+	 * @param g
+	 */
 	private void updateStruct(Atom a, String chain_id, String res_id,
 			ResidueNumber res_num, Chain c, Group g) {
 
@@ -642,20 +698,7 @@ public class CreateBasicStructure {
 		// Atom symbol
 		Element ele = a.getElement();
 		bioStruct.get_atom_site_symbol().add(ele.toString());
-		// bioStruct data item is an author defined alternative to the value of
-		// _atom_site.label_asym_id. bioStruct item holds the PDB chain
-		// identifier.
 		bioStruct.get_atom_site_asym_id().add(chain_id);
-		// bioStruct data item is an author defined alternative to the value of
-		// _atom_site.label_atom_id. bioStruct item holds the PDB atom name.
-		//		bioStruct.get_atom_site_auth_atom_id().add(a.getName());
-		//		// bioStruct data item is an author defined alternative to the value of
-		//		// _atom_site.label_comp_id. bioStruct item holds the PDB 3-letter-code
-		//		// residue names
-		//		bioStruct.get_atom_site_auth_comp_id().add(res_id);
-		// bioStruct data item is an author defined alternative to the value of
-		// _atom_site.label_seq_id. bioStruct item holds the PDB residue number.
-
 		// bioStruct data item corresponds to the PDB insertion code.
 		Character me = res_num.getInsCode();
 		if (res_num.getInsCode()==null){
@@ -665,10 +708,6 @@ public class CreateBasicStructure {
 		else{
 			bioStruct.get_atom_site_pdbx_PDB_ins_code().add(me.toString());
 		}
-		// bioStruct data item identifies the model number in an ensemble of
-		// coordinate data.
-		//		bioStruct.get_atom_site_pdbx_PDB_model_num().add(1);
-		// bioStruct data item is a place holder for the tags used by the PDB to
 		// identify coordinate records (e.g. ATOM or HETATM).
 		bioStruct.get_atom_site_group_PDB().add(myMap.get(g.getType().toString()));
 		// bioStruct item is a uniquely identifies for each alternative site for
