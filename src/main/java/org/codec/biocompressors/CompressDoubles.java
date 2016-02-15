@@ -9,7 +9,7 @@ import org.codec.dataholders.BioDataStruct;
 import org.codec.dataholders.CoreSingleStructure;
 import org.codec.dataholders.NoFloatDataStruct;
 
-public class CompressDoubles extends AbstractBioCompressor implements BioCompressor {
+public class CompressDoubles implements BioCompressor {
 
 	public CoreSingleStructure compresStructure(CoreSingleStructure coress) throws IllegalAccessException, InvocationTargetException {
 		//  Take in the appropriate arrays 

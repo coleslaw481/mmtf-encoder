@@ -24,7 +24,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.codec.biocompressors.BioCompressor;
 import org.codec.biocompressors.CompressDoubles;
-import org.codec.biocompressors.CompressOrderAtoms;
 
 import org.codec.dataholders.BioDataStruct;
 import org.codec.dataholders.CalphaBean;
@@ -32,10 +31,10 @@ import org.codec.dataholders.CalphaDistBean;
 import org.codec.dataholders.CoreSingleStructure;
 
 import org.codec.dataholders.MmtfBean;
+import org.codec.dataholders.NoFloatDataStruct;
+import org.codec.dataholders.NoFloatDataStructBean;
 import org.codec.gitversion.GetRepoState;
 import org.codec.dataholders.HeaderBean;
-import org.codec.dataholders.OrderedDataStruct;
-import org.codec.dataholders.OrderedDataStructBean;
 
 
 /**
@@ -47,7 +46,6 @@ public class EncoderUtils {
 	
 	private GetRepoState grs = new GetRepoState();
 	private BioCompressor doublesToInts = new CompressDoubles();
-	private BioCompressor getResInfoMap = new CompressOrderAtoms();
 	private IntArrayCompressor deltaComp = new FindDeltas();
 	private IntArrayCompressor runLenghtComp = new RunLengthEncode();
 
@@ -95,10 +93,10 @@ public class EncoderUtils {
 	public byte[] compressMainData(BioDataStruct inStruct, HeaderBean inHeader) throws IllegalAccessException, InvocationTargetException, IOException {
 		EncoderUtils cm = new EncoderUtils();
 		// Compress the protein
-		OrderedDataStruct bdh = compressHadoopStruct(inStruct);
+		CoreSingleStructure bdh = compressHadoopStruct(inStruct);
 		// NOW SET UP THE 
 		MmtfBean thisDistBeanTot = new MmtfBean();
-		OrderedDataStructBean bioBean = bdh.findDataAsBean();
+		NoFloatDataStructBean bioBean = (NoFloatDataStructBean) bdh.findDataAsBean();
 		// Copy the shared properties across
 		// Copy this across
 		thisDistBeanTot.setInsCodeList(bioBean.get_atom_site_pdbx_PDB_ins_code());
@@ -133,7 +131,7 @@ public class EncoderUtils {
 	 * @param bioBean
 	 * @throws IOException
 	 */
-	private void addByteArrs(MmtfBean thisDistBeanTot, OrderedDataStructBean bioBean) throws IOException {
+	private void addByteArrs(MmtfBean thisDistBeanTot, NoFloatDataStructBean bioBean) throws IOException {
 		EncoderUtils cm = new EncoderUtils();
 		// X,Y and Z and Bfactors - set these arrays
 		List<byte[]> retArr = getBigAndLittle(bioBean.get_atom_site_Cartn_xInt());
@@ -246,12 +244,12 @@ public class EncoderUtils {
 	 * @throws IllegalAccessException
 	 * @throws InvocationTargetException
 	 */
-	public OrderedDataStruct compressHadoopStruct(BioDataStruct bdh) throws IllegalAccessException, InvocationTargetException{
+	public CoreSingleStructure compressHadoopStruct(BioDataStruct bdh) throws IllegalAccessException, InvocationTargetException{
 
 		CoreSingleStructure outStruct = doublesToInts.compresStructure(bdh);
 
 		// Get the input structure
-		OrderedDataStruct inStruct = (OrderedDataStruct) getResInfoMap.compresStructure(outStruct);
+		NoFloatDataStruct inStruct =  (NoFloatDataStruct) outStruct;
 		ArrayList<Integer> cartnX = (ArrayList<Integer>) inStruct.get_atom_site_Cartn_xInt();
 		ArrayList<Integer> cartnY = (ArrayList<Integer>) inStruct.get_atom_site_Cartn_yInt();
 		ArrayList<Integer> cartnZ = (ArrayList<Integer>) inStruct.get_atom_site_Cartn_zInt();
@@ -267,8 +265,6 @@ public class EncoderUtils {
 		// SMALL GAIN
 		inStruct.set_atom_site_occupancyInt(runLenghtComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_occupancyInt()));
 		// Now the sequential numbers - huge gain - new order of good compressors
-		inStruct.set_atom_site_pdbx_PDB_model_num(runLenghtComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_pdbx_PDB_model_num()));
-		//	}
 		// Now runlength encode the residue order
 		inStruct.setResOrder(inStruct.getResOrder());
 		// THESE ONES CAN BE RUN LENGTH ON DELTA
