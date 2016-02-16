@@ -41,7 +41,7 @@ public class CompressDoubles implements BioCompressor {
 	 * @param multiplier - the multiplication factor for conversion
 	 * @return
 	 */
-	private List<Integer> getIntArrayFromFloat(List<Float> inArray, float multiplier) {
+	public List<Integer> getIntArrayFromFloat(List<Float> inArray, float multiplier) {
 		// Initialise the out array
 		List<Integer> outArray = new ArrayList<Integer>(inArray.size());
 		for(Float oldDouble: inArray){
@@ -58,7 +58,7 @@ public class CompressDoubles implements BioCompressor {
 	 * @param multiplier
 	 * @return
 	 */
-	private List<Integer> getIntArrayFromDouble(List<Double> inArray, Double multiplier){
+	public List<Integer> getIntArrayFromDouble(List<Double> inArray, Double multiplier){
 		// Initialise the out array
 		List<Integer> outArray = new ArrayList<Integer>(inArray.size());
 		for(Double oldDouble: inArray){

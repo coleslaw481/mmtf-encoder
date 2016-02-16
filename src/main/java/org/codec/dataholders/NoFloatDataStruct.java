@@ -1,9 +1,6 @@
 package org.codec.dataholders;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-
-import org.biojava.nbio.structure.Structure;
 import org.apache.commons.beanutils.BeanUtils;
 
 

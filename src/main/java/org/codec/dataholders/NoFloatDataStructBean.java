@@ -3,6 +3,11 @@ package org.codec.dataholders;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class to store the data
+ * @author abradley
+ *
+ */
 public class NoFloatDataStructBean extends NonAtomDataStruct implements BioBean {
 	// A unique identifier for each atom position_
 	public List<Integer> get_atom_site_id() {

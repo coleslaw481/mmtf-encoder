@@ -6,7 +6,7 @@ import java.util.Properties;
 public class GetRepoState {
 
 	/**
-	 * Function to read the git repo information and reutnr a class containing that data
+	 * Function to read the git repo information and return a class containing that data
 	 * @return
 	 * @throws IOException
 	 */
@@ -19,15 +19,24 @@ public class GetRepoState {
 
 		return gitRepositoryState;
 	}
-	
+
 	/**
 	 * Function to get the curretn git version
 	 * @return
 	 * @throws IOException
 	 */
-	public String getCurrentVersion() throws IOException {
+	public String getCurrentVersion(){
 		GetRepoState grs = new GetRepoState();
-		GitRepositoryState repoState = grs.getGitRepositoryState();
-		return repoState.getCommitId();
+		try{
+			GitRepositoryState repoState = grs.getGitRepositoryState();
+			return repoState.getCommitId();
+
+		}
+		catch(IOException e){
+			return "NA";
+		}
+		catch(NullPointerException e){
+			return "NA";
+		}
 	}
 }

@@ -1,12 +1,9 @@
 package org.codec.dataholders;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-
-import org.biojava.nbio.structure.Structure;
 
 /**
- * An interface required for coresingle structure types
+ * An interface required for core single structure types
  * @author abradley
  *
  */
