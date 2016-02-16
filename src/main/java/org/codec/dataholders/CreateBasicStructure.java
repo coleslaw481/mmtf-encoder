@@ -701,7 +701,6 @@ public class CreateBasicStructure {
 			bioStruct.get_atom_site_pdbx_PDB_ins_code().add(null);
 		}
 		else{
-			System.out.println(me.toString());
 			bioStruct.get_atom_site_pdbx_PDB_ins_code().add(me.toString());
 		}
 		// identify coordinate records (e.g. ATOM or HETATM).
