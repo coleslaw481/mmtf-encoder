@@ -222,7 +222,6 @@ public class CreateBasicStructure {
 			// Take the atomic information and place in a Hashmap
 			for (Chain c : chains) {
 				headerStruct.getSequence().add(c.getSeqResSequence());
-
 				// Set the author chain ID
 				int chainIdLen = c.getChainID().length();
 				c.getChainID().getChars(0, chainIdLen, outChar, 0);
@@ -268,12 +267,10 @@ public class CreateBasicStructure {
 					// Get the atomic info required - bioStruct is the unique identifier of the group 
 					List<String> atomInfo = getAtomInfo(g);
 					if (atomInfo==null){
-						System.out.println(g.getPDBName());
 						GroupType gType = g.getType();
 						// A string indicating if it is HETARM or ATOM
 						String gS = gType.toString();
 						String gss = myMap.get(gS);
-						System.out.println(gss);
 					}
 					int hashCode = getHashFromStringList(atomInfo);
 					newChainList.add(hashCode);
@@ -316,7 +313,6 @@ public class CreateBasicStructure {
 						bioStruct.getSecStruct().add(codeHolder.dsspMap.get("NA"));
 					}
 					else{
-						//						System.out.println(dsspMap.get(props.getType().name));
 						bioStruct.getSecStruct().add(codeHolder.dsspMap.get(props.getType().name));
 					}
 					// Now add the residue sequnece number
@@ -703,9 +699,9 @@ public class CreateBasicStructure {
 		Character me = res_num.getInsCode();
 		if (res_num.getInsCode()==null){
 			bioStruct.get_atom_site_pdbx_PDB_ins_code().add(null);
-
 		}
 		else{
+			System.out.println(me.toString());
 			bioStruct.get_atom_site_pdbx_PDB_ins_code().add(me.toString());
 		}
 		// identify coordinate records (e.g. ATOM or HETATM).

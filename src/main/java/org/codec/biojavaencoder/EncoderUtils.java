@@ -100,6 +100,7 @@ public class EncoderUtils {
 		// Copy the shared properties across
 		// Copy this across
 		thisDistBeanTot.setInsCodeList(bioBean.get_atom_site_pdbx_PDB_ins_code());
+		thisDistBeanTot.setAltLabelList(bioBean.get_atom_site_label_alt_id());
 		// Now get this list
 		thisDistBeanTot.setBondAtomList(cm.integersToBytes(inStruct.getInterGroupBondInds()));
 		thisDistBeanTot.setBondOrderList(cm.integersToSmallBytes(inStruct.getInterGroupBondOrders()));
@@ -111,6 +112,7 @@ public class EncoderUtils {
 		thisDistBeanTot.setNumBonds(inHeader.getNumBonds());
 		// Now get the Xtalographic info from this header
 		thisDistBeanTot.setSpaceGroup(inHeader.getSpaceGroup());
+		thisDistBeanTot.setGroupMap(inStruct.getGroupMap());
 		thisDistBeanTot.setUnitCell(inHeader.getUnitCell());
 		thisDistBeanTot.setBioAssembly(inHeader.getBioAssembly());
 		// Now set this extra header information
