@@ -97,8 +97,8 @@ public class EncoderUtils {
 		// NOW SET UP THE 
 		MmtfBean thisDistBeanTot = new MmtfBean();
 		NoFloatDataStructBean bioBean = (NoFloatDataStructBean) bdh.findDataAsBean();
-		// Copy the shared properties across
-		// Copy this across
+		// Copt these things
+		thisDistBeanTot.setPdbId(bioBean.getPdbCode());
 		thisDistBeanTot.setInsCodeList(bioBean.get_atom_site_pdbx_PDB_ins_code());
 		thisDistBeanTot.setAltLabelList(bioBean.get_atom_site_label_alt_id());
 		// Now get this list

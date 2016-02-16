@@ -266,12 +266,6 @@ public class CreateBasicStructure {
 					String res_id = g.getPDBName();
 					// Get the atomic info required - bioStruct is the unique identifier of the group 
 					List<String> atomInfo = getAtomInfo(g);
-					if (atomInfo==null){
-						GroupType gType = g.getType();
-						// A string indicating if it is HETARM or ATOM
-						String gS = gType.toString();
-						String gss = myMap.get(gS);
-					}
 					int hashCode = getHashFromStringList(atomInfo);
 					newChainList.add(hashCode);
 					// If we need bioStruct new information 
