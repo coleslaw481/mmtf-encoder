@@ -134,13 +134,12 @@ public class CreateBasicStructure {
 
 		}else{
 
-			headerStruct.getUnitCell().add(xtalCell.getA());
-			headerStruct.getUnitCell().add(xtalCell.getB());
-			headerStruct.getUnitCell().add(xtalCell.getC());
-			// 
-			headerStruct.getUnitCell().add(xtalCell.getAlpha());
-			headerStruct.getUnitCell().add(xtalCell.getBeta());
-			headerStruct.getUnitCell().add(xtalCell.getGamma());
+			headerStruct.getUnitCell().add((float) xtalCell.getA());
+			headerStruct.getUnitCell().add((float) xtalCell.getB());
+			headerStruct.getUnitCell().add((float) xtalCell.getC());
+			headerStruct.getUnitCell().add((float) xtalCell.getAlpha());
+			headerStruct.getUnitCell().add((float) xtalCell.getBeta());
+			headerStruct.getUnitCell().add((float) xtalCell.getGamma());
 
 			if(spaceGroup==null){
 				// This could be the I21 shown here

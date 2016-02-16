@@ -46,7 +46,7 @@ public class HeaderBean {
 	private int[] groupsPerChain;
 	// LOTS OF OTHER STUFF HERE -> TBD
 	private String spaceGroup;
-	private List<Double> unitCell = new ArrayList<Double>(); 
+	private List<Float> unitCell = new ArrayList<Float>(); 
 	private Map<Integer, BioAssemblyInfoNew> bioAssembly = new HashMap<Integer, BioAssemblyInfoNew>(); 
 	// GETTERS AND SETTERS
 	public int getNumChains() {
@@ -74,10 +74,10 @@ public class HeaderBean {
 	public void setSpaceGroup(String spaceGroup) {
 		this.spaceGroup = spaceGroup;
 	}
-	public List<Double> getUnitCell() {
+	public List<Float> getUnitCell() {
 		return unitCell;
 	}
-	public void setUnitCell(List<Double> unitCell) {
+	public void setUnitCell(List<Float> unitCell) {
 		this.unitCell = unitCell;
 	}
 	public int[] getChainsPerModel() {
