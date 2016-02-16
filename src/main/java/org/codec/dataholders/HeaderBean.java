@@ -8,7 +8,11 @@ import java.util.Map;
 
 import org.codec.dataholders.BioAssemblyInfoNew;
 
-
+/**
+ * Class to store header information in a bean that can be converted to a messagepack
+ * @author abradley
+ *
+ */
 public class HeaderBean {
 	// The number of chains
 	private int numChains;

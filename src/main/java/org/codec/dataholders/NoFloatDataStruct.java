@@ -7,6 +7,11 @@ import org.biojava.nbio.structure.Structure;
 import org.apache.commons.beanutils.BeanUtils;
 
 
+/**
+ * Class to store biological data once the floats have been converted to ints
+ * @author abradley
+ *
+ */
 public class NoFloatDataStruct extends NoFloatDataStructBean implements CoreSingleStructure {
 
 	@SuppressWarnings("static-access")
@@ -18,44 +23,15 @@ public class NoFloatDataStruct extends NoFloatDataStructBean implements CoreSing
 		return newData;
 	}
 
-	public Map<String, Object> findDataAsHashMap()
-			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Structure findDataAsBioJava() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	@Override
 	public String findStructureCode() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.findStructureCode();
 	}
 
-	public BioDataStruct findDataAsBioDataStruct() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public NoFloatDataStruct findDataAsNoFloatStruct() {
-
-		return this;
-	}
-
-	public void setStructureCode(String my_code) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	@Override
 	public int findNumAtoms() {
-		return get_atom_site_Cartn_xInt().size();
+		return this.findNumAtoms();
 	}
 
-	public void fillDataStruct(String key, Object part) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

@@ -2,6 +2,11 @@ package org.codec.gitversion;
 
 import java.util.Properties;
 
+/**
+ * Class to store the current git information
+ * @author abradley
+ *
+ */
 public class GitRepositoryState {
 
 	  private String tags;                    // =${git.tags} // comma separated tag names

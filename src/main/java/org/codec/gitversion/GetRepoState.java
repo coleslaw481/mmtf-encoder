@@ -5,7 +5,11 @@ import java.util.Properties;
 
 public class GetRepoState {
 
-
+	/**
+	 * Function to read the git repo information and reutnr a class containing that data
+	 * @return
+	 * @throws IOException
+	 */
 	public GitRepositoryState getGitRepositoryState() throws IOException
 	{
 		Properties properties = new Properties();
@@ -16,8 +20,12 @@ public class GetRepoState {
 		return gitRepositoryState;
 	}
 	
+	/**
+	 * Function to get the curretn git version
+	 * @return
+	 * @throws IOException
+	 */
 	public String getCurrentVersion() throws IOException {
-		// TODO Auto-generated method stub	
 		GetRepoState grs = new GetRepoState();
 		GitRepositoryState repoState = grs.getGitRepositoryState();
 		return repoState.getCommitId();
