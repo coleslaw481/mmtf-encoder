@@ -9,23 +9,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.biojava.nbio.structure.AminoAcidImpl;
 import org.biojava.nbio.structure.Atom;
-import org.biojava.nbio.structure.AtomImpl;
 import org.biojava.nbio.structure.Bond;
 import org.biojava.nbio.structure.Calc;
 import org.biojava.nbio.structure.Chain;
-import org.biojava.nbio.structure.ChainImpl;
 import org.biojava.nbio.structure.Element;
 import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.GroupType;
-import org.biojava.nbio.structure.HetatomImpl;
-import org.biojava.nbio.structure.NucleotideImpl;
 import org.biojava.nbio.structure.ResidueNumber;
 import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.StructureException;
 import org.biojava.nbio.structure.StructureIO;
-import org.biojava.nbio.structure.StructureImpl;
 import org.biojava.nbio.structure.align.util.AtomCache;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.codec.dataholders.PDBGroup;
@@ -49,7 +43,6 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 	}
 
 
-	//// ADD THE FUNCTIONS REQUIRED
 	@SuppressWarnings("static-access")
 	public BioDataStructBean findDataAsBean() throws IllegalAccessException, InvocationTargetException{
 		// Cast this to the pure data
@@ -58,171 +51,6 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		bu.copyProperties(newData, this);
 		return newData;
 	}	
-
-
-	private Structure getBioJavaFromBioDS() {
-		// Function to create a Biojava object from a BioDS
-		// create the Empty structures
-		Structure my_structure = new StructureImpl();
-		// Get the number of items in each list
-		Chain curr_chain = null;
-		Group curr_group = null;
-		// Now lets loop through the atoms
-		for (int i = 0; i < get_atom_site_Cartn_x().size(); i++) {
-			// NOW MAKE AN ATOM
-			// Make a new atom
-			HashMap<String, Object> info_map = set_atom_props(i);
-			Atom new_atom = (Atom) info_map.get("ATOM");
-			Group new_group = (Group) info_map.get("GROUP");
-			Chain new_chain = (Chain) info_map.get("CHAIN");
-			// Now add t
-			// Check if it's a new chain
-			if (curr_chain == null){
-				curr_chain  = new_chain;
-				my_structure.addChain(curr_chain);		    		
-			}
-			else if (new_chain.getChainID() != curr_chain.getChainID()){
-				curr_chain  = new_chain;
-				my_structure.addChain(curr_chain);
-			}
-			// Check if it's a new group -> make it if it is
-			if (curr_group == null){
-				curr_group = new_group;
-				curr_chain.addGroup(curr_group);		    		
-			}
-			else if (new_group.getResidueNumber().hashCode() != curr_group.getResidueNumber().hashCode()){
-				// Check the group
-				curr_group = new_group;
-				curr_chain.addGroup(curr_group);
-			}
-			// Add an atom to a group
-			curr_group.addAtom(new_atom);
-
-		}
-		return my_structure;
-	}
-
-	private HashMap<String, Object> set_atom_props(int i) {		    
-		// Loop through the attributes of this atom
-		Atom a = new AtomImpl();
-		Chain c = new ChainImpl();
-		// ATOM LEVEL INFORMATION
-		// This data item is a reference to item _chem_comp_atom.atom_id defined in category CHEM_COMP_ATOM which is stored in the Chemical Component Dictionary. This atom identifier uniquely identifies each atom within each chemical component.
-		String chem_name = (String) get_atom_site_label_atom_id().get(i);
-		a.setName(chem_name);
-		// Cartesian coordinate components describing the position of this atom site.
-		try {
-			a.setX(get_atom_site_Cartn_x().get(i));
-			a.setY(get_atom_site_Cartn_y().get(i));
-			a.setZ(get_atom_site_Cartn_z().get(i));
-			// Isotropic atomic displacement parameter
-			a.setTempFactor(get_atom_site_B_iso_or_equiv().get(i));
-			// The fraction of the atom present at this atom position.
-			a.setOccupancy(get_atom_site_occupancy().get(i));
-		} catch (Exception ClassCastException) {
-			a.setX(Double.parseDouble(get_atom_site_Cartn_x().get(i).toString()));
-			a.setY(Double.parseDouble(get_atom_site_Cartn_y().get(i).toString()));
-			a.setZ(Double.parseDouble(get_atom_site_Cartn_z().get(i).toString()));
-			// Isotropic atomic displacement parameter
-			a.setTempFactor(Float.parseFloat(get_atom_site_B_iso_or_equiv().get(i).toString()));
-			// The fraction of the atom present at this atom position.
-			a.setOccupancy(Float.parseFloat(get_atom_site_occupancy().get(i).toString()));
-		} 
-
-
-		Integer seq_num;
-		try {
-			a.setPDBserial((Integer) get_atom_site_id().get(i));
-			seq_num = (Integer) get_atom_site_auth_seq_id().get(i);
-		} catch (Exception ClassCastException) {
-			a.setPDBserial(Integer.parseInt(get_atom_site_id().get(i).toString()));
-			seq_num = Integer.parseInt(get_atom_site_auth_seq_id().get(i).toString());
-
-		}
-
-		a.setElement(Element.valueOfIgnoreCase(get_atom_site_symbol().get(i)));
-
-
-		// This item is a uniquely identifies for each alternative site for this atom position.
-		a.setAltLoc(get_atom_site_label_alt_id().get(i).toString().charAt(0));
-
-		// NOW LET'S CONSIDER GROUP LEVEL DATA
-		// This data item is a place holder for the tags used by the PDB to identify coordinate records (e.g. ATOM or HETATM).        
-		String group_type = (String) get_atom_site_group_PDB().get(i);
-		Group new_g = null;
-		if (group_type.equals("ATOM".hashCode())){
-			new_g = new AminoAcidImpl();
-		}
-		else if(group_type.equals("ATOM")){
-			new_g = new NucleotideImpl();
-		}
-		else if(group_type.equals("HETATM")){
-			new_g = new HetatomImpl();
-		}
-		else{
-			System.out.println(group_type.hashCode());
-			System.out.println("ATOM".hashCode());
-
-			// Throw an exception here
-		}
-		//        // This data item is an author defined alternative to the value of _atom_site.label_comp_id. This item holds the PDB 3-letter-code residue names
-		//		try{
-		//			new_g.setPDBName((String) get_atom_site_auth_comp_id().get(i));
-		//
-		//		}
-		//		catch(Exception NullPointerException) {
-		//			Object me = get_atom_site_auth_comp_id().get(i);
-		//			@SuppressWarnings("unused")
-		//			Object me2 = get_atom_site_auth_comp_id().get(i);
-		//			
-		//		}
-		ResidueNumber res_num = new ResidueNumber();
-		res_num.setChainId((String) get_atom_site_asym_id().get(i));
-		if (get_atom_site_pdbx_PDB_ins_code().get(i)==null){
-			res_num.setInsCode("?".charAt(0));
-		}
-		else{
-			res_num.setInsCode((Character) get_atom_site_pdbx_PDB_ins_code().get(i).charAt(0));        	
-		}
-
-		// This data item is an author defined alternative to the value of _atom_site.label_seq_id. This item holds the PDB residue number.
-		res_num.setSeqNum(seq_num);
-		new_g.setResidueNumber(res_num);
-		// This data item corresponds to the PDB insertion code.
-
-
-		//////// SOME UNUSED DATA HERE
-		// This data item is a reference to item _chem_comp.id defined in category CHEM_COMP. This item is the primary identifier for chemical components which may either be mononers in a polymeric entity or complete non-polymer entities.
-		//String res_name = (String) my_data.get_atom_site_label_comp_id().get(i);
-		// This data item is a reference to _entity_poly_seq.num defined in the ENTITY_POLY_SEQ category. This item is used to maintain the correspondence between the chemical sequence of a polymeric entity and the sequence information in the coordinate list and in may other structural categories. This identifier has no meaning for non-polymer entities.
-		//int seq_num = (Integer) my_data.get_atom_site_label_entity_poly_seq_num().get(i);
-
-		//// NOW LET'S CONSIDER CHAIN RELATED INFORMATION
-		//  This data item is an author defined alternative to the value of _atom_site.label_asym_id. This item holds the PDB chain identifier.
-		c.setChainID((String) get_atom_site_asym_id().get(i));
-		// This data item is reference to item _struct_asym.id defined in category STRUCT_ASYM. This item identifies an instance of particular entity in the deposited coordinate set. For a structure determined by crystallographic method this corresponds to a unique identifier within the cyrstallographic asymmetric unit.
-		c.setInternalChainID((String) get_atom_site_label_asym_id().get(i));
-		// This data item identifies the model number in an ensemble of coordinate data.
-		//my_data.get_atom_site_pdbx_PDB_model_num().get(i));
-
-		// The net integer charge assigned to this atom.
-		// Optional uncertainties assoicated with coordinate positions, occupancies and temperature factors.
-		// Cartesian coordinate components describing the position of this atom site.
-		// THIS INFO CANNOT BE ADDED TO THE COLUMN
-		//        my_data.get_atom_site_pdbx_formal_charge").add("?");
-		//        my_data.get_atom_site_Cartn_x_esd").add("?");
-		//        my_data.get_atom_site_Cartn_y_esd").add("?");
-		//        my_data.get_atom_site_Cartn_z_esd").add("?");
-		//        // Isotropic atomic displacement parameter
-		//        my_data.get_atom_site_B_iso_or_equiv_esd").add("?");
-		//        // The fraction of the atom present at this atom position.
-		//        my_data.get_atoam_site.occupancy_esd").add("?");
-		HashMap<String, Object> hashMap= new HashMap<String, Object>();
-		hashMap.put("ATOM", a);
-		hashMap.put("CHAIN", c);
-		hashMap.put("GROUP", new_g);
-		return hashMap;
-	}
 
 
 	public int findNumAtoms() {
@@ -444,19 +272,6 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		this.get_atom_site_B_iso_or_equiv().add(a.getTempFactor());
 		// The fraction of the atom present at this atom position.
 		this.get_atom_site_occupancy().add(a.getOccupancy());
-		// The net integer charge assigned to this atom.
-		//		this.get_atom_site_pdbx_formal_charge().add(null);
-		//		// Optional uncertainties assoicated with coordinate positions,
-		//		// occupancies and temperature factors.
-		//		// Cartesian coordinate components describing the position of this
-		//		// atom site.
-		//		this.get_atom_site_Cartn_x_esd().add(null);
-		//		this.get_atom_site_Cartn_y_esd().add(null);
-		//		this.get_atom_site_Cartn_z_esd().add(null);
-		//		// Isotropic atomic displacement parameter
-		//		this.get_atom_site_B_iso_or_equiv_esd().add(null);
-		//		// The fraction of the atom present at this atom position.
-		//		this.get_atom_site_occupancy_esd().add(null);
 	}
 
 	public void fillDataStruct(String key, Object part) {
@@ -470,21 +285,12 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		else if (key=="_atom_site_asym_id"){
 			get_atom_site_asym_id().add((String) part);
 		}
-		//			else if (key=="_atom_site_auth_atom_id"){
-		//			get_atom_site_auth_atom_id().add((String) part);
-		//			}
-		//			else if (key=="_atom_site_auth_comp_id"){
-		//			get_atom_site_auth_comp_id().add((String) part);
-		//			}
 		else if (key=="_atom_site_auth_seq_id"){
 			get_atom_site_auth_seq_id().add((Integer) part);
 		}
 		else if (key=="_atom_site_pdbx_PDB_ins_code"){
 			get_atom_site_pdbx_PDB_ins_code().add((String) part);
 		}
-		//			else if (key=="_atom_site_pdbx_PDB_model_num"){
-		//			get_atom_site_pdbx_PDB_model_num().add((Integer) part);
-		//			}
 		else if (key=="_atom_site_group_PDB"){
 			get_atom_site_group_PDB().add((String) part);
 		}
@@ -521,55 +327,14 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		else if (key=="_atom_site_occupancy"){
 			get_atom_site_occupancy().add((Float) part);
 		}
-		//			else if (key=="_atom_site_pdbx_formal_charge"){
-		//			get_atom_site_pdbx_formal_charge().add((Double) part);
-		//			}
-		//			else if (key=="_atom_site_Cartn_x_esd"){
-		//			get_atom_site_Cartn_x_esd().add((Double) part);
-		//			}
-		//			else if (key=="_atom_site_Cartn_y_esd"){
-		//			get_atom_site_Cartn_y_esd().add((Double) part);
-		//			}
-		//			else if (key=="_atom_site_Cartn_z_esd"){
-		//			get_atom_site_Cartn_z_esd().add((Double) part);
-		//			}
-		//			else if (key=="_atom_site_B_iso_or_equiv_esd"){
-		//			get_atom_site_B_iso_or_equiv_esd().add((Double) part);
-		//			}
-		//			else if (key=="_atom_site_occupancy_esd"){
-		//			get_atom_site_occupancy_esd().add((Double) part);
-		//			}
 	}
-
-	public NoFloatDataStruct findDataAsNoFloatStruct() {
-		//
-		return null;
-	}
-	public Structure findDataAsBioJava() {
-		// TODO Auto-generated method stub
-		// Function to generate a Biojava structure from the available data
-		Structure my_structure = getBioJavaFromBioDS();
-		my_structure.setPDBCode(this.getPdbCode());
-		return my_structure;
-	}
-
-	public BioDataStruct findDataAsBioDataStruct() {
-		// TODO Auto-generated method stub
-		return this;
-	}
+	@Override
 	public String findStructureCode() {
-		// TODO Auto-generated method stub
+		// Get the PDB code
 		return this.getPdbCode();
 	}
-	public void setStructureCode(String my_code) {
-		this.setPdbCode(my_code);
 
-	}
-	public Map<String, Object> findDataAsHashMap()
-			throws IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 
 }
