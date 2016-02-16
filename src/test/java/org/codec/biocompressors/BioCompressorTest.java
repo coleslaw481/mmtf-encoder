@@ -10,7 +10,6 @@ import static org.junit.Assert.*;
 
 public class BioCompressorTest {
 
-
 	@Test
 	public void floatToInt() {
 		// 
