@@ -29,10 +29,8 @@ public class EncodeStructure {
 		Map<Integer, PDBGroup> totMap = new HashMap<Integer, PDBGroup>();
 		// Parse the data into the basic data structure
 		cbs.createFromJavaStruct(pdbId, totMap);
-		
 		// Compress the data and get it back out
 		return eu.compressMainData(cbs.getBioStruct(), cbs.getHeaderStruct());
-		
 	}
 	
 }
