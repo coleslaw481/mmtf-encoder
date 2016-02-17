@@ -45,7 +45,8 @@ public class CreateBasicStructure {
 	private HeaderBean headerStruct = new HeaderBean();
 	// A class to store encoding information
 	private CodeHolders codeHolder = new CodeHolders();
-
+	// Now a list to store the bonds
+	private  List<Bond> totBonds = new ArrayList<Bond>();
 	
 	public BioDataStruct getBioStruct() {
 		return bioStruct;
@@ -403,7 +404,7 @@ public class CreateBasicStructure {
 		bioStruct.setGroupMap(bioStructMap);	
 		calphaStruct.setGroupMap(calphaBioStructMap);
 		// Now set this header info
-		headerStruct.setNumBonds(bondCounter);
+		headerStruct.setNumBonds(bondCounter+bioStruct.getInterGroupBondInds().size());
 		headerStruct.setNumAtoms(atomCounter);
 		headerStruct.setNumChains(chainCounter);
 		headerStruct.setPdbCode(bioJavaStruct.getPDBCode());
@@ -608,7 +609,7 @@ public class CreateBasicStructure {
 	 * @param atomCounter
 	 */
 	private void getInterGroupBond(Group g, List<Atom> totAtoms, int atomCounter){
-		//, List<Integer> bondOrders, List<Integer> bondInds
+		// Get the atoms
 		List<Atom> atoms = g.getAtoms();
 		int n = atoms.size();
 		if (n == 0) {
@@ -624,6 +625,11 @@ public class CreateBasicStructure {
 				if (index<0){
 					int newInd = totAtoms.indexOf(other);
 					if(newInd > -1){
+						// 
+						if(totBonds.indexOf(b)==-1){
+							return;
+						}
+						totBonds.add(b);
 						bioStruct.getInterGroupBondInds().add(newInd);
 						bioStruct.getInterGroupBondInds().add(i+atomCounter);
 						bioStruct.getInterGroupBondOrders().add(order);
