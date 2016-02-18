@@ -122,6 +122,9 @@ public class CreateBasicStructure {
 			}
 			catch(FileNotFoundException enew){
 			}
+			catch(Exception bige){
+				System.out.println(bige);
+			}
 		}
 		// Get the number of models
 		Integer numModels = bioJavaStruct.nrModels();
