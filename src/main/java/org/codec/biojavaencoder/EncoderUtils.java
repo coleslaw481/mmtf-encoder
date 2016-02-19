@@ -299,28 +299,27 @@ public class EncoderUtils {
 		calphaOut.setChainList(inHeader.getChainList());
 		calphaOut.setNumAtoms(calphaStruct.getNumAtoms());
 		// Write the secondary stucture out
-		calphaOut.setSecStruct(cm.integersToSmallBytes(calphaStruct.getSecStruct()));
+		calphaOut.setSecStructList(cm.integersToSmallBytes(calphaStruct.getSecStruct()));
 		calphaOut.setGroupMap(calphaStruct.getGroupMap());
-		calphaOut.setResOrder(cm.integersToBytes(calphaStruct.getResOrder()));
+		calphaOut.setGroupTypeList(cm.integersToBytes(calphaStruct.getResOrder()));
 		// Get the input structure
 		ArrayList<Integer> cartnX = (ArrayList<Integer>) calphaStruct.getCartn_x();
 		ArrayList<Integer> cartnY = (ArrayList<Integer>) calphaStruct.getCartn_y();
 		ArrayList<Integer> cartnZ = (ArrayList<Integer>) calphaStruct.getCartn_z();
 		// Now add the X coords
 		List<byte[]> bigAndLittleX = getBigAndLittle(deltaComp.compressIntArray(cartnX));
-		calphaOut.setCartn_x_big(bigAndLittleX.get(0));
-		calphaOut.setCartn_x_small(bigAndLittleX.get(1));
+		calphaOut.setxCoordBig(bigAndLittleX.get(0));
+		calphaOut.setxCoordSmall(bigAndLittleX.get(1));
 		//  No add they Y coords
 		List<byte[]> bigAndLittleY = getBigAndLittle(deltaComp.compressIntArray(cartnY));
-		calphaOut.setCartn_y_big(bigAndLittleY.get(0));
-		calphaOut.setCartn_y_small(bigAndLittleY.get(1));
+		calphaOut.setyCoordBig(bigAndLittleY.get(0));
+		calphaOut.setyCoordSmall(bigAndLittleY.get(1));
 		// Now add the Z coords
 		List<byte[]> bigAndLittleZ = getBigAndLittle(deltaComp.compressIntArray(cartnZ));
-		calphaOut.setCartn_z_big(bigAndLittleZ.get(0));
-		calphaOut.setCartn_z_small(bigAndLittleZ.get(1));	
+		calphaOut.setzCoordBig(bigAndLittleZ.get(0));
+		calphaOut.setzCoordSmall(bigAndLittleZ.get(1));	
 		// THESE ONES CAN BE RUN LENGTH ON DELTA
-		calphaOut.set_atom_site_auth_seq_id(cm.integersToBytes(runLenghtComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) calphaStruct.get_atom_site_auth_seq_id()))));
-		calphaOut.set_atom_site_label_entity_poly_seq_num(cm.integersToBytes(runLenghtComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) calphaStruct.get_atom_site_label_entity_poly_seq_num()))));			
+		calphaOut.setGroupNumList(cm.integersToBytes(runLenghtComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) calphaStruct.get_atom_site_auth_seq_id()))));
 		return calphaOut;
 	}
 
