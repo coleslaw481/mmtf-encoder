@@ -282,7 +282,7 @@ public class CreateBasicStructure {
 						else{
 							outGroup.setHetFlag(true);
 						}
-						outGroup.setResName(atomInfo.remove(0));
+						outGroup.setGroupName(atomInfo.remove(0));
 						outGroup.setAtomInfo(atomInfo);
 						// Now get the bond list (lengths, orders and indices)
 						createBondList(g, outGroup); 
@@ -376,7 +376,7 @@ public class CreateBasicStructure {
 							else{
 								outGroup.setHetFlag(true);
 							}
-							outGroup.setResName(calphaAtomInfo.remove(0));
+							outGroup.setGroupName(calphaAtomInfo.remove(0));
 							outGroup.setAtomInfo(calphaAtomInfo);
 							// Now get the bond list (lengths, orders and indices)
 							createBondList(g, outGroup); 
@@ -625,7 +625,7 @@ public class CreateBasicStructure {
 				Atom other = b.getOther(a);
 				int index = atoms.indexOf(other);
 				int order = b.getBondOrder();
-				if (index<0){
+				if (index<0 || index>=totAtoms.size()){
 					int newInd = totAtoms.indexOf(other);
 					if(newInd > -1){
 						// 
