@@ -632,7 +632,7 @@ public class CreateBasicStructure {
 						}
 						totBonds.add(b);
 						bioStruct.getInterGroupBondInds().add(newInd);
-						bioStruct.getInterGroupBondInds().add(i+atomCounter);
+						bioStruct.getInterGroupBondInds().add(totAtoms.indexOf(a));
 						bioStruct.getInterGroupBondOrders().add(order);
 					}
 				}
