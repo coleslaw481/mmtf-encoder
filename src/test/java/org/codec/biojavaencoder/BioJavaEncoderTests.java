@@ -17,9 +17,9 @@ public class BioJavaEncoderTests {
 		
 		EncodeStructure es = new EncodeStructure();
 		byte[] cupData = es.encodeFromPdbId("4CUP");
-		assertEquals(10821, cupData.length);
+		assertEquals(16215, cupData.length);
 		byte[] aq1Data = es.encodeFromPdbId("1AQ1");
-		assertEquals(21835, aq1Data.length);
+		assertEquals(28006, aq1Data.length);
 	}
 	
 }
