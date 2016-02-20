@@ -422,12 +422,9 @@ public class CreateBasicStructure {
 		// Get all the atoms
 		List<Atom> theseAtoms = new ArrayList<Atom>();
 		for (int i=0; i<bioJavaStruct.nrModels(); i++){
-
 			List<Chain> chains = bioJavaStruct.getModel(i);
 			for (Chain c : chains) {
-
 				for (Group g : c.getAtomGroups()) {
-
 					for(Atom a: g.getAtoms()){
 						theseAtoms.add(a);					}
 				}
@@ -626,10 +623,11 @@ public class CreateBasicStructure {
 				int index = atoms.indexOf(other);
 				int order = b.getBondOrder();
 				if (index<0 || index>=totAtoms.size()){
+					// Get the index of hte atom ins the total list
 					int newInd = totAtoms.indexOf(other);
 					if(newInd > -1){
-						// 
-						if(totBonds.indexOf(b)==-1){
+						// 				
+						if(totBonds.indexOf(b)!=-1){
 							return;
 						}
 						totBonds.add(b);
