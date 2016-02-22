@@ -33,4 +33,15 @@ public class EncodeStructure {
 		return eu.compressMainData(cbs.getBioStruct(), cbs.getHeaderStruct());
 	}
 	
+	public byte[] encodeBackBoneFromPdbId(String pdbId) throws IllegalAccessException, InvocationTargetException, IOException, StructureException{
+		// Get the two utility classes
+		EncoderUtils eu = new EncoderUtils();
+		CreateBasicStructure cbs = new CreateBasicStructure();
+		Map<Integer, PDBGroup> totMap = new HashMap<Integer, PDBGroup>();
+		// Parse the data into the basic data structure
+		cbs.createFromJavaStruct(pdbId, totMap);
+		// Compress the data and get it back out
+		return eu.getMessagePack(eu.compCAlpha(cbs.getCalphaStruct(), cbs.getHeaderStruct()));
+	}	
+	
 }
