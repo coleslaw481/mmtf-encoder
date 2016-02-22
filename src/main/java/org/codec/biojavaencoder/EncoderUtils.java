@@ -8,7 +8,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import org.codec.arraycompressors.FindDeltas;
@@ -24,7 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.codec.biocompressors.BioCompressor;
 import org.codec.biocompressors.CompressDoubles;
-
+import org.codec.dataholders.BioAssemblyInfoNew;
 import org.codec.dataholders.BioDataStruct;
 import org.codec.dataholders.CalphaBean;
 import org.codec.dataholders.CalphaDistBean;
@@ -292,6 +294,17 @@ public class EncoderUtils {
 		// Create the object to leave
 		CalphaDistBean calphaOut = new CalphaDistBean();
 		calphaOut.setMmtfProducer("RCSB-PDB Generator---version: "+grs.getCurrentVersion());
+		
+		// The PDBCode
+		calphaOut.setPdbId(inHeader.getPdbCode());
+		// The title of the structure
+		calphaOut.setTitle(inHeader.getTitle());
+		// String for the space group
+		calphaOut.setSpaceGroup(inHeader.getSpaceGroup());
+		// The unit cell information
+		calphaOut.setUnitCell(inHeader.getUnitCell());
+		// A map of Bioassembly -> new class so serializable
+		calphaOut.setBioAssembly(inHeader.getBioAssembly());
 		// Now set the number of bonds
 		calphaOut.setNumBonds(calphaStruct.getNumBonds());
 		calphaOut.setGroupsPerChain(calphaStruct.getGroupsPerChain());

@@ -1,6 +1,8 @@
 package org.codec.dataholders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,6 +20,46 @@ public class CalphaDistBean {
 	private String mmtfProducer;
 	// The number of bonds
 	private int numBonds;
+	// The PDBCode
+	private String pdbId;
+	// The title of the structure
+	private String title;
+	// String for the space group
+	private String spaceGroup;
+	// The unit cell information
+	private List<Float> unitCell = new ArrayList<Float>(); 
+	// A map of Bioassembly -> new class so serializable
+	private Map<Integer, BioAssemblyInfoNew> bioAssembly = new HashMap<Integer, BioAssemblyInfoNew>(); 
+	public String getPdbId() {
+		return pdbId;
+	}
+	public void setPdbId(String pdbId) {
+		this.pdbId = pdbId;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getSpaceGroup() {
+		return spaceGroup;
+	}
+	public void setSpaceGroup(String spaceGroup) {
+		this.spaceGroup = spaceGroup;
+	}
+	public List<Float> getUnitCell() {
+		return unitCell;
+	}
+	public void setUnitCell(List<Float> unitCell) {
+		this.unitCell = unitCell;
+	}
+	public Map<Integer, BioAssemblyInfoNew> getBioAssembly() {
+		return bioAssembly;
+	}
+	public void setBioAssembly(Map<Integer, BioAssemblyInfoNew> bioAssembly) {
+		this.bioAssembly = bioAssembly;
+	}
 	// The list of sequence information
 	private  Map<Integer, PDBGroup> groupMap = new HashMap<Integer, PDBGroup>();
 	// Delta and run length
