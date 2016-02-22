@@ -13,6 +13,7 @@ import org.codec.dataholders.PDBGroup;
  *
  */
 public class CalphaBean {
+	private int numBonds = 0;
 	private int numAtoms = 0;
 	// Convert this information
 	private  Map<Integer, PDBGroup> groupMap = new HashMap<Integer, PDBGroup>();
@@ -90,6 +91,12 @@ public class CalphaBean {
 	}
 	public void setNumAtoms(int numAtoms) {
 		this.numAtoms = numAtoms;
+	}
+	public int getNumBonds() {
+		return numBonds;
+	}
+	public void setNumBonds(int numBonds) {
+		this.numBonds = numBonds;
 	}
 
 

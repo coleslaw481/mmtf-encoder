@@ -30,7 +30,6 @@ public class GetRepoState {
 		try{
 			GitRepositoryState repoState = grs.getGitRepositoryState();
 			return repoState.getCommitId();
-
 		}
 		catch(IOException e){
 			return "NA";

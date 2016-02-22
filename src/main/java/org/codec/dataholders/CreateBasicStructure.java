@@ -378,9 +378,30 @@ public class CreateBasicStructure {
 							}
 							outGroup.setGroupName(calphaAtomInfo.remove(0));
 							outGroup.setAtomInfo(calphaAtomInfo);
-							// Now get the bond list (lengths, orders and indices)
-							createBondList(g, outGroup); 
-							getCharges(g, outGroup);
+							// Now get the bond list (lengths, orders and indices) and atom charges
+							List<Integer> bondIndices = new ArrayList<Integer>();
+							List<Integer> bondOrders = new ArrayList<Integer>();
+							List<Integer> atomCharges = new ArrayList<Integer>();
+							for(Atom a : cAlphaGroup){
+								atomCharges.add((int) a.getCharge());
+								for(Bond b: a.getBonds()){
+									// Get the index
+									int thisInd = cAlphaGroup.indexOf(a);
+									int otherInd = cAlphaGroup.indexOf(b.getOther(a));
+									if(otherInd!=-1){
+										if(thisInd<otherInd){
+											bondIndices.add(thisInd);
+											bondIndices.add(otherInd);
+											bondOrders.add(b.getBondOrder());
+										}
+										
+									}
+								}
+							}
+							// Now set them
+							outGroup.setBondIndices(bondIndices);
+							outGroup.setBondOrders(bondOrders);
+							outGroup.setAtomCharges(atomCharges);
 							// 
 							calphaBioStructMap.put(calphaResCounter, outGroup);
 							hashToCalphaRes.put(calphaHashCode, calphaResCounter);
@@ -413,6 +434,8 @@ public class CreateBasicStructure {
 		headerStruct.setPdbCode(bioJavaStruct.getPDBCode());
 	}
 
+
+
 	/**
 	 * Function to get all the atoms in the strucutre as a list
 	 * @param bioJavaStruct
@@ -426,7 +449,8 @@ public class CreateBasicStructure {
 			for (Chain c : chains) {
 				for (Group g : c.getAtomGroups()) {
 					for(Atom a: g.getAtoms()){
-						theseAtoms.add(a);					}
+						theseAtoms.add(a);					
+						}
 				}
 			}
 		}
@@ -444,9 +468,9 @@ public class CreateBasicStructure {
 	 */
 	private void addCalpha(Atom a, Group g, SecStrucState props, ResidueNumber res_num, int thisRes) {
 		calphaStruct.setNumAtoms(calphaStruct.getNumAtoms()+1); 
-		calphaStruct.getCartn_x().add((int) (a.getX()*1000));
-		calphaStruct.getCartn_y().add((int) (a.getY()*1000));
-		calphaStruct.getCartn_z().add((int) (a.getZ()*1000));
+		calphaStruct.getCartn_x().add((int) Math.round(a.getX()*1000));
+		calphaStruct.getCartn_y().add((int) Math.round(a.getY()*1000));
+		calphaStruct.getCartn_z().add((int) Math.round(a.getZ()*1000));
 		// Get the residue name
 		calphaStruct.get_atom_site_auth_seq_id().add(res_num.getSeqNum());
 		calphaStruct.get_atom_site_label_entity_poly_seq_num().add(res_num.getSeqNum());
@@ -676,7 +700,7 @@ public class CreateBasicStructure {
 		outGroup.setBondOrders(bondOrder);
 		outGroup.setBondIndices(bondList);
 	}
-
+	
 
 	/**
 	 * Function to update the structure with this atomic information

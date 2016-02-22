@@ -11,6 +11,13 @@ import java.util.Map;
  */
 public class CalphaDistBean {
 	
+	
+	// The version of the format
+	private String mmtfVersion = "0.1";
+	// The producer
+	private String mmtfProducer;
+	// The number of bonds
+	private int numBonds;
 	// The list of sequence information
 	private  Map<Integer, PDBGroup> groupMap = new HashMap<Integer, PDBGroup>();
 	// Delta and run length
@@ -118,6 +125,24 @@ public class CalphaDistBean {
 	}
 	public void setzCoordSmall(byte[] cartn_z_small) {
 		this.zCoordSmall = cartn_z_small;
+	}
+	public String getMmtfVersion() {
+		return mmtfVersion;
+	}
+	public void setMmtfVersion(String mmtfVersion) {
+		this.mmtfVersion = mmtfVersion;
+	}
+	public String getMmtfProducer() {
+		return mmtfProducer;
+	}
+	public void setMmtfProducer(String mmtfProducer) {
+		this.mmtfProducer = mmtfProducer;
+	}
+	public int getNumBonds() {
+		return numBonds;
+	}
+	public void setNumBonds(int numBonds) {
+		this.numBonds = numBonds;
 	}
 
 

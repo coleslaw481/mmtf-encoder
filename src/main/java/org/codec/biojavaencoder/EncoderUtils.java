@@ -261,7 +261,6 @@ public class EncoderUtils {
 		inStruct.set_atom_site_Cartn_zInt(deltaComp.compressIntArray(cartnZ));		
 		//		// Now the occupancy and BFACTOR -> VERY SMALL GAIN
 		inStruct.set_atom_site_B_iso_or_equivInt(deltaComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_B_iso_or_equivInt()));
-		//		inStruct.set_atom_site_B_iso_or_equivInt(intArrComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_B_iso_or_equivInt()));
 		// SMALL GAIN
 		inStruct.set_atom_site_occupancyInt(runLenghtComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_occupancyInt()));
 		// Now the sequential numbers - huge gain - new order of good compressors
@@ -292,6 +291,9 @@ public class EncoderUtils {
 		EncoderUtils cm = new  EncoderUtils();
 		// Create the object to leave
 		CalphaDistBean calphaOut = new CalphaDistBean();
+		calphaOut.setMmtfProducer("RCSB-PDB Generator---version: "+grs.getCurrentVersion());
+		// Now set the number of bonds
+		calphaOut.setNumBonds(calphaStruct.getNumBonds());
 		calphaOut.setGroupsPerChain(calphaStruct.getGroupsPerChain());
 		// Set this header info
 		calphaOut.setChainsPerModel(inHeader.getChainsPerModel());
