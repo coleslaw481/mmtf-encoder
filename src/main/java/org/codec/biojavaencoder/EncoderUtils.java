@@ -185,7 +185,7 @@ public class EncoderUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	private List<byte[]> getBigAndLittle(List<Integer> inArr) throws IOException{
+	public List<byte[]> getBigAndLittle(List<Integer> inArr) throws IOException{
 		List<byte[]>outArr = new ArrayList<byte[]>();
 		int counter = 0;
 		ByteArrayOutputStream littleOS = new ByteArrayOutputStream();

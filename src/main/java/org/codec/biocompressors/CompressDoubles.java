@@ -45,7 +45,7 @@ public class CompressDoubles implements BioCompressor {
 		// Initialise the out array
 		List<Integer> outArray = new ArrayList<Integer>(inArray.size());
 		for(Float oldDouble: inArray){
-			Integer newInt = (int) (oldDouble * multiplier);
+			Integer newInt = (int) Math.round(oldDouble * multiplier);
 			outArray.add(newInt);
 		}
 		return outArray;
@@ -62,7 +62,7 @@ public class CompressDoubles implements BioCompressor {
 		// Initialise the out array
 		List<Integer> outArray = new ArrayList<Integer>(inArray.size());
 		for(Double oldDouble: inArray){
-			Integer newInt = (int) (oldDouble * multiplier);
+			Integer newInt = (int) Math.round(oldDouble * multiplier);
 			outArray.add(newInt);
 		}
 		return outArray;
