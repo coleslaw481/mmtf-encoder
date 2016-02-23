@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.vecmath.Matrix4d;
 
@@ -38,7 +40,7 @@ import org.codec.dataholders.CodeHolders;
 
 
 public class CreateBasicStructure {
-	
+
 	// Instances availble to the class of the main, calpha and header data structures
 	private BioDataStruct bioStruct = new BioDataStruct();
 	private CalphaBean calphaStruct = new CalphaBean();
@@ -47,12 +49,12 @@ public class CreateBasicStructure {
 	private CodeHolders codeHolder = new CodeHolders();
 	// Now a list to store the bonds
 	private  List<Bond> totBonds = new ArrayList<Bond>();
-	
+
 	public BioDataStruct getBioStruct() {
 		return bioStruct;
 	}
 
-	
+
 	public void setBioStruct(BioDataStruct bioStruct) {
 		this.bioStruct = bioStruct;
 	}
@@ -76,7 +78,7 @@ public class CreateBasicStructure {
 	public void setHeaderStruct(HeaderBean headerStruct) {
 		this.headerStruct = headerStruct;
 	}
-	
+
 	// A map for the different names of groups
 	private static final Map<String, String> myMap;
 	static {
@@ -180,8 +182,8 @@ public class CreateBasicStructure {
 		// headerStruct.setAuthors(header.getAuthors());
 		// Set these containers
 		int atomCounter = 0;
-		int chainCounter =0;
-		int resCounter =0;
+		int chainCounter = 0;
+		int resCounter = 0;
 		int totChains = 0;
 		// Get the total number of chains
 		for (int i=0; i<numModels; i++){		
@@ -261,14 +263,29 @@ public class CreateBasicStructure {
 				// Get the groups
 				String chain_id = c.getChainID();
 				int numBonds = 0;
-				for (Group g : c.getAtomGroups()) {
+				for (Group totG : c.getAtomGroups()) {
+					String res_id = totG.getPDBName();
+					Set<Atom> uniqueAtoms = new HashSet<Atom>();
+					List<Atom> theseAtoms = new ArrayList<Atom>();
+					for(Atom a: totG.getAtoms()){
+						theseAtoms.add(a);
+						uniqueAtoms.add(a);
+					}
+					List<Group> altLocs = totG.getAltLocs();
+					for(Group thisG: altLocs){
+						for(Atom a: thisG.getAtoms()){
+							if(uniqueAtoms.contains(a)){ 
+								continue;
+							}
+							theseAtoms.add(a);
+						}
+					}
 					// Get any bonds between groups
-					getInterGroupBond(g, totAtoms, atomCounter);
+					getInterGroupBond(theseAtoms, totAtoms, atomCounter);
 					// Count the number of bonds
 					// Now loop through and get the coords
-					String res_id = g.getPDBName();
 					// Get the atomic info required - bioStruct is the unique identifier of the group 
-					List<String> atomInfo = getAtomInfo(g);
+					List<String> atomInfo = getAtomInfo(theseAtoms);
 					int hashCode = getHashFromStringList(atomInfo);
 					newChainList.add(hashCode);
 					// If we need bioStruct new information 
@@ -285,8 +302,8 @@ public class CreateBasicStructure {
 						outGroup.setGroupName(atomInfo.remove(0));
 						outGroup.setAtomInfo(atomInfo);
 						// Now get the bond list (lengths, orders and indices)
-						createBondList(g, outGroup); 
-						getCharges(g, outGroup);
+						createBondList(theseAtoms, outGroup); 
+						getCharges(theseAtoms, outGroup);
 						// 
 						bioStructMap.put(resCounter, outGroup);
 						hashToRes.put(hashCode, resCounter);
@@ -299,12 +316,11 @@ public class CreateBasicStructure {
 						bioStruct.getResOrder().add(hashToRes.get(hashCode));	
 						numBonds = bioStructMap.get(hashToRes.get(hashCode)).getBondOrders().size();
 					}
-
 					// Add the number of bonds 
 					bondCounter+=numBonds;
 
-					ResidueNumber res_num = g.getResidueNumber();
-					SecStrucState props = (SecStrucState) g.getProperty("secstruc");
+					ResidueNumber res_num = totG.getResidueNumber();
+					SecStrucState props = (SecStrucState) totG.getProperty("secstruc");
 					//
 					if(props==null){
 						bioStruct.getSecStruct().add(codeHolder.dsspMap.get("NA"));
@@ -319,11 +335,12 @@ public class CreateBasicStructure {
 					// Set whether or not this is a calpha
 					List<Atom> cAlphaGroup = new ArrayList<Atom>();
 					boolean isInCalpha = false;
-					for (Atom a : g.getAtoms()) {
+					for (Atom a : theseAtoms) {
 						// Update the structure
-						updateStruct(a, chain_id, res_id, res_num, c, g);
+						updateStruct(a, chain_id, res_id, res_num, c);
 
-						// Now we can deal with altloc - but ignore for now
+						// FIXME include ALT LOC INFORAMTION
+						// Now we can deal with altloc - but ignore for now (in the backbone case)
 						if (a.getAltLoc()!=" ".charAt(0) || a.getAltLoc()==1){
 							// Ignore alternate locations for now
 
@@ -331,9 +348,8 @@ public class CreateBasicStructure {
 
 						// NOW THE CALPHA / PHOSPHATE / LIGAND STUFF
 						// Update the backbone atoms
-
-						if(g.getChemComp().getPolymerType()!=null){
-							if(g.getChemComp().getPolymerType().equals(PolymerType.peptide)==true){
+						if(totG.getChemComp().getPolymerType()!=null){
+							if(totG.getChemComp().getPolymerType().equals(PolymerType.peptide)==true){
 								if (a.getName().equals("CA") && a.getElement().toString().equals("C")){
 									// Now add the calpha
 									cAlphaGroup.add(a);
@@ -341,7 +357,7 @@ public class CreateBasicStructure {
 								}
 							}
 							// GET THE PHOSPHATE
-							else if(g.getChemComp().getPolymerType().equals(PolymerType.POLYNUCLEOTIDE_ONLY)==true){
+							else if(totG.getChemComp().getPolymerType().equals(PolymerType.POLYNUCLEOTIDE_ONLY)==true){
 								// Nucleotide core co-ordinates	
 								if(a.getName().equals("P")){	
 									cAlphaGroup.add(a);
@@ -351,7 +367,7 @@ public class CreateBasicStructure {
 						}
 						else{
 							// Get the Ligands
-							if(g.isWater()==false && g.getType().name().equals("HETATM")){
+							if(totG.isWater()==false && totG.getType().name().equals("HETATM")){
 								cAlphaGroup.add(a);
 								isInCalpha= true;
 							}
@@ -394,7 +410,7 @@ public class CreateBasicStructure {
 											bondIndices.add(otherInd);
 											bondOrders.add(b.getBondOrder());
 										}
-										
+
 									}
 								}
 							}
@@ -416,12 +432,12 @@ public class CreateBasicStructure {
 						calphaStruct.getResOrder().add(thisResNum);
 						// Now add all these atoms to the calpha
 						for(Atom a: cAlphaGroup){
-							addCalpha(a, g, props, res_num, thisResNum);
+							addCalpha(a, props, res_num, thisResNum);
 						}
+
 					}
 				}
 			}
-
 		}
 		// Set this  final information in the total datastruct
 		bioStruct.setGroupList(bioStructList);
@@ -450,7 +466,7 @@ public class CreateBasicStructure {
 				for (Group g : c.getAtomGroups()) {
 					for(Atom a: g.getAtoms()){
 						theseAtoms.add(a);					
-						}
+					}
 				}
 			}
 		}
@@ -466,7 +482,7 @@ public class CreateBasicStructure {
 	 * @param res_num
 	 * @param thisRes
 	 */
-	private void addCalpha(Atom a, Group g, SecStrucState props, ResidueNumber res_num, int thisRes) {
+	private void addCalpha(Atom a, SecStrucState props, ResidueNumber res_num, int thisRes) {
 		calphaStruct.setNumAtoms(calphaStruct.getNumAtoms()+1); 
 		calphaStruct.getCartn_x().add((int) Math.round(a.getX()*1000));
 		calphaStruct.getCartn_y().add((int) Math.round(a.getY()*1000));
@@ -486,14 +502,14 @@ public class CreateBasicStructure {
 
 	}
 
-	
+
 	/**
 	 * Function to find the atomic charge information
 	 * @param g
 	 * @param outGroup
 	 */
-	private void getCharges(Group g, PDBGroup outGroup) {
-		for(Atom a: g.getAtoms()){
+	private void getCharges(List<Atom> theseAtoms, PDBGroup outGroup) {
+		for(Atom a: theseAtoms){
 			outGroup.getAtomCharges().add((int) a.getCharge());
 		}
 
@@ -578,28 +594,7 @@ public class CreateBasicStructure {
 		return result;
 	}
 
-	/**
-	 * Function to find the atomic information from a group
-	 * @param g
-	 * @return
-	 */
-	private List<String> getAtomInfo(Group g){
-		int numAtoms = g.getAtoms().size();
-		int arraySize = numAtoms*2+2;
-		List<String> outString = new ArrayList<String>(arraySize);
-		GroupType gType = g.getType();
-		// A string indicating if it is HETARM or ATOM
-		String gS = gType.toString();
-		String gss = myMap.get(gS);
-		// A
-		outString.add(gss);
-		outString.add(g.getPDBName());
-		for (Atom a: g.getAtoms()){
-			outString.add(a.getElement().toString());
-			outString.add(a.getName());
-		}
-		return outString;
-	}
+
 
 
 	/**
@@ -632,9 +627,8 @@ public class CreateBasicStructure {
 	 * @param totAtoms
 	 * @param atomCounter
 	 */
-	private void getInterGroupBond(Group g, List<Atom> totAtoms, int atomCounter){
+	private void getInterGroupBond(List<Atom> atoms, List<Atom> totAtoms, int atomCounter){
 		// Get the atoms
-		List<Atom> atoms = g.getAtoms();
 		int n = atoms.size();
 		if (n == 0) {
 			System.out.println("creating empty bond list");
@@ -670,8 +664,7 @@ public class CreateBasicStructure {
 	 * @param g
 	 * @param outGroup
 	 */
-	private void createBondList(Group g, PDBGroup outGroup) {
-		List<Atom> atoms = g.getAtoms();
+	private void createBondList(List<Atom> atoms, PDBGroup outGroup) {
 		int n = atoms.size();
 		if (n == 0) {
 			System.out.println("creating empty bond list");
@@ -681,6 +674,8 @@ public class CreateBasicStructure {
 		List<Integer> bondList = new ArrayList<Integer>();
 		List<Integer> bondOrder = new ArrayList<Integer>();
 
+		List<List<Integer>> totList = new ArrayList<List<Integer>>();
+		
 		for (int i = 0; i < n; i++) {
 			// Get the  atom
 			Atom a = atoms.get(i);
@@ -688,19 +683,28 @@ public class CreateBasicStructure {
 				Atom other = b.getOther(a);
 				int index = atoms.indexOf(other);
 				int order = b.getBondOrder();
-
-				if (index > i) {
+				// Now build this 
+				List<Integer> thisArr = new ArrayList<Integer>();
+				thisArr.add(index);
+				thisArr.add(i);
+				Collections.sort(thisArr);
+				// Now check if we've done it
+				if(totList.contains(thisArr)){
+					continue;
+				}
+				if (index != -1) {
 					// Add the information
 					bondList.add(index);
 					bondList.add(i);
 					bondOrder.add(order);
 				}
+				totList.add(thisArr);
 			}
 		}
 		outGroup.setBondOrders(bondOrder);
 		outGroup.setBondIndices(bondList);
 	}
-	
+
 
 	/**
 	 * Function to update the structure with this atomic information
@@ -712,7 +716,7 @@ public class CreateBasicStructure {
 	 * @param g
 	 */
 	private void updateStruct(Atom a, String chain_id, String res_id,
-			ResidueNumber res_num, Chain c, Group g) {
+			ResidueNumber res_num, Chain c) {
 
 		bioStruct.get_atom_site_id().add(a.getPDBserial());
 		// Atom symbol
@@ -728,7 +732,7 @@ public class CreateBasicStructure {
 			bioStruct.get_atom_site_pdbx_PDB_ins_code().add(me.toString());
 		}
 		// identify coordinate records (e.g. ATOM or HETATM).
-		bioStruct.get_atom_site_group_PDB().add(myMap.get(g.getType().toString()));
+		bioStruct.get_atom_site_group_PDB().add(myMap.get(a.getGroup().getType().toString()));
 		// bioStruct item is a uniquely identifies for each alternative site for
 		// bioStruct atom position.
 		if (a.getAltLoc()==" ".charAt(0)){
@@ -753,12 +757,12 @@ public class CreateBasicStructure {
 		// category CHEM_COMP. bioStruct item is the primary identifier for
 		// chemical components which may either be mononers in a polymeric
 		// entity or complete non-polymer entities.
-		bioStruct.get_atom_site_label_comp_id().add(g.getPDBName());
+		bioStruct.get_atom_site_label_comp_id().add(a.getGroup().getPDBName());
 		// bioStruct data item is a reference to _entity.id defined in the ENTITY
 		// category. bioStruct item is used to identify chemically distinct
 		// portions of the molecular structure (e.g. polymer chains,
 		// ligands, solvent).
-		bioStruct.get_atom_site_label_entity_id().add(myMap.get(g.getType().toString()));
+		bioStruct.get_atom_site_label_entity_id().add(myMap.get(a.getGroup().getType().toString()));
 		// bioStruct data item is a reference to _entity_poly_seq.num defined in
 		// the ENTITY_POLY_SEQ category. bioStruct item is used to maintain the
 		// correspondence between the chemical sequence of a polymeric

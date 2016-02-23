@@ -8,9 +8,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import org.codec.arraycompressors.FindDeltas;
@@ -18,25 +16,20 @@ import org.codec.arraycompressors.IntArrayCompressor;
 import org.codec.arraycompressors.RunLengthEncode;
 import org.codec.arraycompressors.RunLengthEncodeString;
 import org.codec.arraycompressors.StringArrayCompressor;
-
-
-import org.msgpack.jackson.dataformat.MessagePackFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-
 import org.codec.biocompressors.BioCompressor;
 import org.codec.biocompressors.CompressDoubles;
-import org.codec.dataholders.BioAssemblyInfoNew;
 import org.codec.dataholders.BioDataStruct;
 import org.codec.dataholders.CalphaBean;
 import org.codec.dataholders.CalphaDistBean;
 import org.codec.dataholders.CoreSingleStructure;
-
+import org.codec.dataholders.HeaderBean;
 import org.codec.dataholders.MmtfBean;
 import org.codec.dataholders.NoFloatDataStruct;
 import org.codec.dataholders.NoFloatDataStructBean;
 import org.codec.gitversion.GetRepoState;
-import org.codec.dataholders.HeaderBean;
+import org.msgpack.jackson.dataformat.MessagePackFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 
 /**
@@ -158,9 +151,7 @@ public class EncoderUtils {
 
 		// Now the secondary structure
 		thisDistBeanTot.setSecStructList(cm.integersToSmallBytes(bioBean.getSecStruct()));
-
-		// Now this ectra information
-		//		thisDistBeanTot.set_atom_site_label_alt_id(cm.charsToBytes(bioBean.get_atom_site_label_alt_id()));
+		// Now set the group num list
 		thisDistBeanTot.setGroupNumList(cm.integersToBytes(bioBean.get_atom_site_auth_seq_id()));
 	}
 
