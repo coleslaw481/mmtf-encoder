@@ -159,7 +159,7 @@ public class CreateBasicStructure {
 
 		// GET THE HEADER INFORMATION
 		PDBHeader header = bioJavaStruct.getPDBHeader();
-		Map<Integer, BioAssemblyInfoNew> outMap = transformBioAssembly(header);
+		Map<Integer, BioAssemblyInfoNew> outMap = transformBioAssembly(bioJavaStruct, header);
 		headerStruct.setBioAssembly(outMap);
 		List<List<Integer>> bioStructList= new ArrayList<List<Integer>>();
 		bioStruct.setNumModels(numModels);
@@ -338,16 +338,8 @@ public class CreateBasicStructure {
 					for (Atom a : theseAtoms) {
 						// Update the structure
 						updateStruct(a, chain_id, res_id, res_num, c);
-
-						// FIXME include ALT LOC INFORAMTION
-						// Now we can deal with altloc - but ignore for now (in the backbone case)
-						if (a.getAltLoc()!=" ".charAt(0) || a.getAltLoc()==1){
-							// Ignore alternate locations for now
-
-						}
-
 						// NOW THE CALPHA / PHOSPHATE / LIGAND STUFF
-						// Update the backbone atoms
+						// GET THE CALPHA
 						if(totG.getChemComp().getPolymerType()!=null){
 							if(totG.getChemComp().getPolymerType().equals(PolymerType.peptide)==true){
 								if (a.getName().equals("CA") && a.getElement().toString().equals("C")){
@@ -365,8 +357,8 @@ public class CreateBasicStructure {
 								}
 							}
 						}
+						// GET THE LIGANDS
 						else{
-							// Get the Ligands
 							if(totG.isWater()==false && totG.getType().name().equals("HETATM")){
 								cAlphaGroup.add(a);
 								isInCalpha= true;
@@ -374,7 +366,7 @@ public class CreateBasicStructure {
 						}
 						atomCounter+=1;
 					}
-					// Now 
+					// Now add this group - if there is something to consider
 					if(isInCalpha){
 						calphaGroupsPerChain[chainCounter-1] = calphaGroupsPerChain[chainCounter-1]+1;
 						List<String> calphaAtomInfo = getAtomInfo(cAlphaGroup);
@@ -519,14 +511,20 @@ public class CreateBasicStructure {
 	/**
 	 * Function to generate a serializable biotransformation for storing
 	 * in the messagepack
+	 * @param bioJavaStruct 
 	 * @param header
 	 * @return
 	 */
-	private Map<Integer, BioAssemblyInfoNew> transformBioAssembly(PDBHeader header) {
+	private Map<Integer, BioAssemblyInfoNew> transformBioAssembly(Structure bioJavaStruct, PDBHeader header) {
 		// Here we need to iterate through and get the chain ids and the matrices
 		Map<Integer, BioAssemblyInfo> inputBioAss = header.getBioAssemblies();
 		Map<Integer, BioAssemblyInfoNew> outMap = new HashMap<Integer,BioAssemblyInfoNew>();
-		// 
+		// Generate a map including internal asymid
+		Map<String, String> chainMap = new HashMap<String, String>();
+		for(Chain c: bioJavaStruct.getChains()){
+			chainMap.put(c.getInternalChainID(), c.getChainID());
+		}
+		
 
 		for (Map.Entry<Integer, BioAssemblyInfo> entry : inputBioAss.entrySet()) {
 			Map<Matrix4d,BiologicalAssemblyTransformationNew> matSet = new HashMap<Matrix4d,BiologicalAssemblyTransformationNew>();
@@ -544,7 +542,16 @@ public class CreateBasicStructure {
 
 				// Get the chain and the matrix
 				String thisId = transform.getId();
-				String thisChain = transform.getChainId();
+				String oldChain = transform.getChainId();
+				String thisChain = null;
+				// Get the chain identifier 
+				if(chainMap.containsKey(oldChain)){
+					thisChain = chainMap.get(oldChain);
+				}
+				else{
+					continue;
+				}
+				
 				Matrix4d thisMat = transform.getTransformationMatrix();
 				double[] outList = new double[16];
 				// 
