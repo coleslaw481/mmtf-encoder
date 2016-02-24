@@ -8,7 +8,8 @@ package org.codec.dataholders;
  */
 public class CoreDataStruct {
 	// The core data in all modules
-	protected String pdbCode = null;	
+	protected String pdbCode = null;
+	
 	public String getPdbCode() {
 		return pdbCode;
 	}

@@ -4,12 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class to store the data
+ * Class to store the data after removal of floats
  * @author abradley
  *
  */
-public class NoFloatDataStructBean extends NonAtomDataStruct implements BioBean {
-	// A unique identifier for each atom position_
+public class NoFloatDataStructBean extends NoCoordDataStruct implements BioBean {
+	// All this information is stored as Integer arrays
+	private List<Integer> _atom_site_Cartn_xInt = new ArrayList<Integer>();
+	private List<Integer> _atom_site_Cartn_yInt  = new ArrayList<Integer>();
+	private List<Integer>  _atom_site_Cartn_zInt  = new ArrayList<Integer>();
+	// Isotropic atomic displacement parameter
+	private List<Integer>  _atom_site_B_iso_or_equivInt  = new ArrayList<Integer>();
+	// The fraction of the atom present at this atom position_
+	private List<Integer>  _atom_site_occupancyInt  = new ArrayList<Integer>();
+	
 	public List<Integer> get_atom_site_id() {
 		return _atom_site_id;
 	}
@@ -17,7 +25,6 @@ public class NoFloatDataStructBean extends NonAtomDataStruct implements BioBean 
 		this._atom_site_id = _atom_site_id;
 	}
 	private List<Integer> _atom_site_id =  new ArrayList<Integer>();
-	// Atom symbol
 	public List<Integer> get_atom_site_Cartn_xInt() {
 		return _atom_site_Cartn_xInt;
 	}
@@ -48,14 +55,6 @@ public class NoFloatDataStructBean extends NonAtomDataStruct implements BioBean 
 	public void set_atom_site_occupancyInt(List<Integer> _atom_site_occupancyInt) {
 		this._atom_site_occupancyInt = _atom_site_occupancyInt;
 	}
-	// All this information is stored as Integer arrays
-	private List<Integer> _atom_site_Cartn_xInt = new ArrayList<Integer>();
-	private List<Integer> _atom_site_Cartn_yInt  = new ArrayList<Integer>();
-	private List<Integer>  _atom_site_Cartn_zInt  = new ArrayList<Integer>();
-	// Isotropic atomic displacement parameter
-	private List<Integer>  _atom_site_B_iso_or_equivInt  = new ArrayList<Integer>();
-	// The fraction of the atom present at this atom position_
-	private List<Integer>  _atom_site_occupancyInt  = new ArrayList<Integer>();
 
 
 }

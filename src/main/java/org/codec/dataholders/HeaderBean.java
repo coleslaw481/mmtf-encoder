@@ -14,6 +14,7 @@ import org.codec.dataholders.BioAssemblyInfoNew;
  *
  */
 public class HeaderBean {
+	
 	// The number of chains
 	private int numChains;
 	// The number of atoms
@@ -34,8 +35,6 @@ public class HeaderBean {
 	private String doi;
 	private String authors;
 	private List<String> sequence;
-
-
 	// Add this to store the model information
 	private int[] chainsPerModel;
 	// List to store the chainids
@@ -48,7 +47,8 @@ public class HeaderBean {
 	private String spaceGroup;
 	private List<Float> unitCell = new ArrayList<Float>(); 
 	private Map<Integer, BioAssemblyInfoNew> bioAssembly = new HashMap<Integer, BioAssemblyInfoNew>(); 
-	// GETTERS AND SETTERS
+	// Getters and setters
+	
 	public int getNumChains() {
 		return numChains;
 	}

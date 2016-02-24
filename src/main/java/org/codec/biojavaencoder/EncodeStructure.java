@@ -33,6 +33,13 @@ public class EncodeStructure {
 		return eu.compressMainData(cbs.getBioStruct(), cbs.getHeaderStruct());
 	}
 	
+	/**
+	 * Function to encode the backbond data given a PDB id
+	 * @param pdbId
+	 * @return
+	 * @throws IOException
+	 * @throws StructureException
+	 */
 	public byte[] encodeBackBoneFromPdbId(String pdbId) throws IOException, StructureException{
 		// Get the two utility classes
 		EncoderUtils eu = new EncoderUtils();

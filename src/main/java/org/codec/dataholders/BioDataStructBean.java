@@ -8,8 +8,25 @@ import java.util.List;
  * @author abradley
  *
  */
-public class BioDataStructBean extends NonAtomDataStruct implements BioBean {
+public class BioDataStructBean extends NoCoordDataStruct implements BioBean {
 
+	// Coordinate infroamtion
+	protected List<Double> _atom_site_Cartn_x = new ArrayList<Double>();
+	protected List<Double> _atom_site_Cartn_y = new ArrayList<Double>();
+	protected List<Double> _atom_site_Cartn_z = new ArrayList<Double>();
+	// Isotropic atomic displacement parameter
+	protected List<Float> _atom_site_B_iso_or_equiv= new ArrayList<Float>();
+	// The fraction of the atom present at this atom position_
+	protected List<Float> _atom_site_occupancy= new ArrayList<Float>();
+	// An array to store the secondary structure data
+	private List<Integer> secStruct = new ArrayList<Integer>();
+	// An array to store the sequence of residues
+	private List<Integer> resOrder = new ArrayList<Integer>();
+	// Arrays to store the indices and bond orders of inter residue bonds
+	private List<Integer> interGroupBondInds = new ArrayList<Integer>();
+	private List<Integer> interGroupBondOrders = new ArrayList<Integer>();
+	
+	
 	public List<Integer> get_atom_site_id() {
 		return _atom_site_id;
 	}
@@ -71,16 +88,4 @@ public class BioDataStructBean extends NonAtomDataStruct implements BioBean {
 	public void setInterGroupBondInds(List<Integer> interGroupBondInds) {
 		this.interGroupBondInds = interGroupBondInds;
 	}
-	// Coordinate infroamtion
-	protected List<Double> _atom_site_Cartn_x = new ArrayList<Double>();
-	protected List<Double> _atom_site_Cartn_y = new ArrayList<Double>();
-	protected List<Double> _atom_site_Cartn_z = new ArrayList<Double>();
-	// Isotropic atomic displacement parameter
-	protected List<Float> _atom_site_B_iso_or_equiv= new ArrayList<Float>();
-	// The fraction of the atom present at this atom position_
-	protected List<Float> _atom_site_occupancy= new ArrayList<Float>();
-	private List<Integer> secStruct = new ArrayList<Integer>();
-	private List<Integer> resOrder = new ArrayList<Integer>();
-	private List<Integer> interGroupBondInds = new ArrayList<Integer>();
-	private List<Integer> interGroupBondOrders = new ArrayList<Integer>();
 }

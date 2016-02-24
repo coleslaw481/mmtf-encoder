@@ -13,7 +13,6 @@ import java.util.Map;
  */
 public class CalphaDistBean {
 	
-	
 	// The version of the format
 	private String mmtfVersion = "0.1";
 	// The producer
@@ -30,6 +29,30 @@ public class CalphaDistBean {
 	private List<Float> unitCell = new ArrayList<Float>(); 
 	// A map of Bioassembly -> new class so serializable
 	private Map<Integer, BioAssemblyInfoNew> bioAssembly = new HashMap<Integer, BioAssemblyInfoNew>(); 
+	// The list of sequence information
+	private  Map<Integer, PDBGroup> groupMap = new HashMap<Integer, PDBGroup>();
+	// Delta and run length
+	private byte[]  groupNumList;
+	private byte[] groupTypeList;
+	private byte[] secStructList;
+	// For the big arrays split into two -> one of 32 bit ints, one of 16
+	private byte[] xCoordBig;
+	private byte[] yCoordBig;
+	private byte[] zCoordBig;
+	// Now for the small ints -> 16 bit
+	private byte[] xCoordSmall;
+	private byte[] yCoordSmall;
+	private byte[] zCoordSmall;
+	// Add this header info
+	// Total data for memory allocation
+	private int numAtoms;
+	// Add this to store the model information
+	private int[] chainsPerModel;
+	// List to store the chainids
+	private byte[] chainList;
+	// List to store the number of groups per chain
+	private int[] groupsPerChain;	
+	
 	public String getPdbId() {
 		return pdbId;
 	}
@@ -60,30 +83,6 @@ public class CalphaDistBean {
 	public void setBioAssembly(Map<Integer, BioAssemblyInfoNew> bioAssembly) {
 		this.bioAssembly = bioAssembly;
 	}
-	// The list of sequence information
-	private  Map<Integer, PDBGroup> groupMap = new HashMap<Integer, PDBGroup>();
-	// Delta and run length
-	private byte[]  groupNumList;
-	private byte[] groupTypeList;
-	private byte[] secStructList;
-	// For the big arrays split into two -> one of 32 bit ints, one of 16
-	private byte[] xCoordBig;
-	private byte[] yCoordBig;
-	private byte[] zCoordBig;
-	// Now for the small ints -> 16 bit
-	private byte[] xCoordSmall;
-	private byte[] yCoordSmall;
-	private byte[] zCoordSmall;
-	// Add this header info
-	// Total data for memory allocation
-	private int numAtoms;
-	// Add this to store the model information
-	private int[] chainsPerModel;
-	// List to store the chainids
-	private byte[] chainList;
-	// List to store the number of groups per chain
-	private int[] groupsPerChain;
-
 	public int getNumAtoms() {
 		return numAtoms;
 	}

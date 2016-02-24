@@ -13,6 +13,7 @@ import org.codec.dataholders.PDBGroup;
  *
  */
 public class CalphaBean {
+	// Two integers to store the number of bonds and numeb
 	private int numBonds = 0;
 	private int numAtoms = 0;
 	// Convert this information
@@ -28,9 +29,8 @@ public class CalphaBean {
 	private List<Integer> cartn_z = new ArrayList<Integer>();
 	//secondary structure (on a per reisude basis
 	private List<Integer> secStruct = new ArrayList<Integer>();
-	private int[] groupsPerChain;
-	// The ligand information???
-	
+	// A list of integers indicating the number of groups in a chain
+	private int[] groupsPerChain;	
 	// Now the getters and setters
 	public List<Integer> getCartn_x() {
 		return cartn_x;
@@ -98,7 +98,4 @@ public class CalphaBean {
 	public void setNumBonds(int numBonds) {
 		this.numBonds = numBonds;
 	}
-
-
-
 }

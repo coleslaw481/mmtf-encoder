@@ -206,10 +206,8 @@ public class CreateBasicStructure {
 
 		calphaStruct.setGroupsPerChain(calphaGroupsPerChain);
 		headerStruct.setSequence(new ArrayList<String>());
-		int thisResNum = 0;
 		int calphaResCounter = 0;
 		int bondCounter = 0;
-		char[] outChar = new char[4];
 
 		// Get all the atoms
 		List<Atom> totAtoms = getAllAtoms(bioJavaStruct);
@@ -227,30 +225,9 @@ public class CreateBasicStructure {
 			// Take the atomic information and place in a Hashmap
 			for (Chain c : chains) {
 				headerStruct.getSequence().add(c.getSeqResSequence());
-				// Set the author chain ID
-				int chainIdLen = c.getChainID().length();
-				c.getChainID().getChars(0, chainIdLen, outChar, 0);
-				// Set the bytrarrat
-				charChainList[chainCounter*4+0] = (byte) outChar[0];
-				if(chainIdLen>1){
-					charChainList[chainCounter*4+1] = (byte) outChar[1];
-				}
-				else{
-					charChainList[chainCounter*4+1] = (byte) 0;
-				}
-				if(chainIdLen>2){
-					charChainList[chainCounter*4+2] = (byte) outChar[2];
-				}				
-				else{
-					charChainList[chainCounter*4+2] = (byte) 0;
-				}
-				if(chainIdLen>3){
-					charChainList[chainCounter*4+3] = (byte) outChar[3];
-				}				
-				else{
-					charChainList[chainCounter*4+3] =  (byte) 0;
-				}
-				// Set the asym chain id
+				// Set the auth chain id
+				setChainId(c, charChainList, chainCounter);
+				// Set the number of groups per chain
 				groupsPerChain[chainCounter] = c.getAtomGroups().size();
 				calphaGroupsPerChain[chainCounter] = 0;
 				// Add this chain to the list
@@ -338,96 +315,13 @@ public class CreateBasicStructure {
 					for (Atom a : theseAtoms) {
 						// Update the structure
 						updateStruct(a, chain_id, res_id, res_num, c);
-						// NOW THE CALPHA / PHOSPHATE / LIGAND STUFF
-						// GET THE CALPHA
-						if(totG.getChemComp().getPolymerType()!=null){
-							if(totG.getChemComp().getPolymerType().equals(PolymerType.peptide)==true){
-								if (a.getName().equals("CA") && a.getElement().toString().equals("C")){
-									// Now add the calpha
-									cAlphaGroup.add(a);
-									isInCalpha= true;
-								}
-							}
-							// GET THE PHOSPHATE
-							else if(totG.getChemComp().getPolymerType().equals(PolymerType.POLYNUCLEOTIDE_ONLY)==true){
-								// Nucleotide core co-ordinates	
-								if(a.getName().equals("P")){	
-									cAlphaGroup.add(a);
-									isInCalpha= true;
-								}
-							}
-						}
-						// GET THE LIGANDS
-						else{
-							if(totG.isWater()==false && totG.getType().name().equals("HETATM")){
-								cAlphaGroup.add(a);
-								isInCalpha= true;
-							}
-						}
+						// Update hte calpha
+						updateCalpha(totG, cAlphaGroup, a, isInCalpha);
+						// Increment the atom counter
 						atomCounter+=1;
 					}
 					// Now add this group - if there is something to consider
-					if(isInCalpha){
-						calphaGroupsPerChain[chainCounter-1] = calphaGroupsPerChain[chainCounter-1]+1;
-						List<String> calphaAtomInfo = getAtomInfo(cAlphaGroup);
-						/// Now consider the C-Alpha, phosophate and ligand cases
-						int calphaHashCode = getHashFromStringList(calphaAtomInfo);
-						newChainList.add(calphaHashCode);
-						// If we need bioStruct new information 
-						if (hashToCalphaRes.containsKey(calphaHashCode)==false){
-							// Make a new group
-							PDBGroup outGroup = new PDBGroup();
-							// 
-							if(calphaAtomInfo.remove(0)=="ATOM"){
-								outGroup.setHetFlag(false);
-							}
-							else{
-								outGroup.setHetFlag(true);
-							}
-							outGroup.setGroupName(calphaAtomInfo.remove(0));
-							outGroup.setAtomInfo(calphaAtomInfo);
-							// Now get the bond list (lengths, orders and indices) and atom charges
-							List<Integer> bondIndices = new ArrayList<Integer>();
-							List<Integer> bondOrders = new ArrayList<Integer>();
-							List<Integer> atomCharges = new ArrayList<Integer>();
-							for(Atom a : cAlphaGroup){
-								atomCharges.add((int) a.getCharge());
-								for(Bond b: a.getBonds()){
-									// Get the index
-									int thisInd = cAlphaGroup.indexOf(a);
-									int otherInd = cAlphaGroup.indexOf(b.getOther(a));
-									if(otherInd!=-1){
-										if(thisInd<otherInd){
-											bondIndices.add(thisInd);
-											bondIndices.add(otherInd);
-											bondOrders.add(b.getBondOrder());
-										}
-
-									}
-								}
-							}
-							// Now set them
-							outGroup.setBondIndices(bondIndices);
-							outGroup.setBondOrders(bondOrders);
-							outGroup.setAtomCharges(atomCharges);
-							// 
-							calphaBioStructMap.put(calphaResCounter, outGroup);
-							hashToCalphaRes.put(calphaHashCode, calphaResCounter);
-							thisResNum = calphaResCounter;
-							calphaResCounter+=1;
-						}
-						else{
-							// Add this to the residue order
-							thisResNum = hashToCalphaRes.get(calphaHashCode);						
-						}						
-						// Now set this as the answer
-						calphaStruct.getResOrder().add(thisResNum);
-						// Now add all these atoms to the calpha
-						for(Atom a: cAlphaGroup){
-							addCalpha(a, props, res_num, thisResNum);
-						}
-
-					}
+					addCalphaGroup(calphaGroupsPerChain, cAlphaGroup, newChainList, hashToCalphaRes, isInCalpha, calphaBioStructMap,chainCounter,calphaResCounter, props, res_num);
 				}
 			}
 		}
@@ -441,7 +335,157 @@ public class CreateBasicStructure {
 		headerStruct.setNumChains(chainCounter);
 		headerStruct.setPdbCode(bioJavaStruct.getPDBCode());
 	}
+	
+	/**
+	 * Function to add a calpha group
+	 * @param calphaGroupsPerChain
+	 * @param cAlphaGroup
+	 * @param newChainList
+	 * @param hashToCalphaRes
+	 * @param isInCalpha
+	 * @param calphaBioStructMap
+	 * @param chainCounter
+	 * @param calphaResCounter
+	 * @param props
+	 * @param res_num
+	 */
+	private void addCalphaGroup(int[] calphaGroupsPerChain, List<Atom> cAlphaGroup, List<Integer> newChainList,
+			Map<Integer, Integer> hashToCalphaRes, boolean isInCalpha, Map<Integer, PDBGroup> calphaBioStructMap, int chainCounter, int calphaResCounter, SecStrucState props, ResidueNumber res_num) {
+		int thisResNum;
+		if(isInCalpha){
+			calphaGroupsPerChain[chainCounter-1] = calphaGroupsPerChain[chainCounter-1]+1;
+			List<String> calphaAtomInfo = getAtomInfo(cAlphaGroup);
+			/// Now consider the C-Alpha, phosophate and ligand cases
+			int calphaHashCode = getHashFromStringList(calphaAtomInfo);
+			newChainList.add(calphaHashCode);
+			// If we need bioStruct new information 
+			if (hashToCalphaRes.containsKey(calphaHashCode)==false){
+				// Make a new group
+				PDBGroup outGroup = new PDBGroup();
+				// 
+				if(calphaAtomInfo.remove(0)=="ATOM"){
+					outGroup.setHetFlag(false);
+				}
+				else{
+					outGroup.setHetFlag(true);
+				}
+				outGroup.setGroupName(calphaAtomInfo.remove(0));
+				outGroup.setAtomInfo(calphaAtomInfo);
+				// Now get the bond list (lengths, orders and indices) and atom charges
+				List<Integer> bondIndices = new ArrayList<Integer>();
+				List<Integer> bondOrders = new ArrayList<Integer>();
+				List<Integer> atomCharges = new ArrayList<Integer>();
+				for(Atom a : cAlphaGroup){
+					atomCharges.add((int) a.getCharge());
+					for(Bond b: a.getBonds()){
+						// Get the index
+						int thisInd = cAlphaGroup.indexOf(a);
+						int otherInd = cAlphaGroup.indexOf(b.getOther(a));
+						if(otherInd!=-1){
+							if(thisInd<otherInd){
+								bondIndices.add(thisInd);
+								bondIndices.add(otherInd);
+								bondOrders.add(b.getBondOrder());
+							}
 
+						}
+					}
+				}
+				// Now set them
+				outGroup.setBondIndices(bondIndices);
+				outGroup.setBondOrders(bondOrders);
+				outGroup.setAtomCharges(atomCharges);
+				// 
+				calphaBioStructMap.put(calphaResCounter, outGroup);
+				hashToCalphaRes.put(calphaHashCode, calphaResCounter);
+				thisResNum = calphaResCounter;
+				calphaResCounter+=1;
+			}
+			else{
+				// Add this to the residue order
+				thisResNum = hashToCalphaRes.get(calphaHashCode);						
+			}						
+			// Now set this as the answer
+			calphaStruct.getResOrder().add(thisResNum);
+			// Now add all these atoms to the calpha
+			for(Atom a: cAlphaGroup){
+				addCalpha(a, props, res_num, thisResNum);
+			}
+		}
+		
+	}
+
+
+	/**
+	 * 
+	 * @param totG
+	 * @param cAlphaGroup
+	 * @param a
+	 */
+	private void updateCalpha(Group totG, List<Atom> cAlphaGroup, Atom a, Boolean isInCalpha) {
+		// NOW THE CALPHA / PHOSPHATE / LIGAND STUFF
+		// GET THE CALPHA
+		if(totG.getChemComp().getPolymerType()!=null){
+			if(totG.getChemComp().getPolymerType().equals(PolymerType.peptide)==true){
+				if (a.getName().equals("CA") && a.getElement().toString().equals("C")){
+					// Now add the calpha
+					cAlphaGroup.add(a);
+					isInCalpha= true;
+				}
+			}
+			// GET THE PHOSPHATE
+			else if(totG.getChemComp().getPolymerType().equals(PolymerType.POLYNUCLEOTIDE_ONLY)==true){
+				// Nucleotide core co-ordinates	
+				if(a.getName().equals("P")){	
+					cAlphaGroup.add(a);
+					isInCalpha= true;
+				}
+			}
+		}
+		// GET THE LIGANDS
+		else{
+			if(totG.isWater()==false && totG.getType().name().equals("HETATM")){
+				cAlphaGroup.add(a);
+				isInCalpha= true;
+			}
+		}
+		
+	}
+
+
+	/**
+	 * Functon to set the chain id
+	 * @param c
+	 * @param charChainList
+	 * @param chainCounter
+	 */
+	private void setChainId(Chain c, byte[] charChainList, int chainCounter) {
+		// A char array to store the chars
+		char[] outChar = new char[4];
+		// The lenght of this chain id
+		int chainIdLen = c.getChainID().length();
+		c.getChainID().getChars(0, chainIdLen, outChar, 0);
+		// Set the bytrarray - chain ids can be up to 4 chars - pad with empty bytes
+		charChainList[chainCounter*4+0] = (byte) outChar[0];
+		if(chainIdLen>1){
+			charChainList[chainCounter*4+1] = (byte) outChar[1];
+		}
+		else{
+			charChainList[chainCounter*4+1] = (byte) 0;
+		}
+		if(chainIdLen>2){
+			charChainList[chainCounter*4+2] = (byte) outChar[2];
+		}				
+		else{
+			charChainList[chainCounter*4+2] = (byte) 0;
+		}
+		if(chainIdLen>3){
+			charChainList[chainCounter*4+3] = (byte) outChar[3];
+		}				
+		else{
+			charChainList[chainCounter*4+3] =  (byte) 0;
+		}		
+	}
 
 
 	/**

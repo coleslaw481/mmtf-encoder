@@ -24,7 +24,11 @@ import org.biojava.nbio.structure.align.util.AtomCache;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.codec.dataholders.PDBGroup;
 
-
+/**
+ * Class to store the basic biological data from an MMCIF file
+ * @author anthony
+ *
+ */
 public class BioDataStruct extends BioDataStructBean implements CoreSingleStructure {
 	// Function to update the BioDataStruct for a given 
 	private static final Map<String, String> myMap;
@@ -42,13 +46,11 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		getBioDataStructFromPDBId(in_code);
 	}
 
-
-	@SuppressWarnings("static-access")
+	
 	public BioDataStructBean findDataAsBean() throws IllegalAccessException, InvocationTargetException{
 		// Cast this to the pure data
 		BioDataStructBean newData = new BioDataStructBean();
-		BeanUtils bu = new BeanUtils();
-		bu.copyProperties(newData, this);
+		BeanUtils.copyProperties(newData, this);
 		return newData;
 	}	
 
@@ -57,6 +59,13 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		return get_atom_site_Cartn_x().size();
 	}
 
+	/**
+	 * Function to get this BioDataStruct bean given a PDB id
+	 * @param input_id
+	 * @return
+	 * @throws IOException
+	 * @throws StructureException
+	 */
 	private BioDataStruct getBioDataStructFromPDBId(String input_id) throws IOException, StructureException {
 		AtomCache cache = new AtomCache();
 		cache.setUseMmCif(true);
