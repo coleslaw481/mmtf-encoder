@@ -1,4 +1,4 @@
-package org.codec.dataholders;
+package org.codec.biojavaencoder;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,12 +34,15 @@ import org.biojava.nbio.structure.secstruc.SecStrucState;
 import org.biojava.nbio.structure.xtal.CrystalCell;
 import org.biojava.nbio.structure.xtal.SpaceGroup;
 import org.codec.dataholders.BioAssemblyInfoNew;
+import org.codec.dataholders.BioDataStruct;
 import org.codec.dataholders.BiologicalAssemblyTransformationNew;
+import org.codec.dataholders.CalphaBean;
 import org.codec.dataholders.PDBGroup;
 import org.codec.dataholders.CodeHolders;
+import org.codec.dataholders.HeaderBean;
 
 
-public class CreateBasicStructure {
+public class ParseFromBiojava {
 
 	// Instances availble to the class of the main, calpha and header data structures
 	private BioDataStruct bioStruct = new BioDataStruct();

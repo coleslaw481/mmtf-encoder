@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.biojava.nbio.structure.StructureException;
 import org.codec.dataholders.PDBGroup;
-import org.codec.dataholders.CreateBasicStructure;
 import org.codec.biojavaencoder.EncoderUtils;
 
 public class EncodeStructure {
@@ -25,7 +24,7 @@ public class EncodeStructure {
 	public byte[] encodeFromPdbId(String pdbId) throws IllegalAccessException, InvocationTargetException, IOException, StructureException{
 		// Get the two utility classes
 		EncoderUtils eu = new EncoderUtils();
-		CreateBasicStructure cbs = new CreateBasicStructure();
+		ParseFromBiojava cbs = new ParseFromBiojava();
 		Map<Integer, PDBGroup> totMap = new HashMap<Integer, PDBGroup>();
 		// Parse the data into the basic data structure
 		cbs.createFromJavaStruct(pdbId, totMap);
@@ -43,7 +42,7 @@ public class EncodeStructure {
 	public byte[] encodeBackBoneFromPdbId(String pdbId) throws IOException, StructureException{
 		// Get the two utility classes
 		EncoderUtils eu = new EncoderUtils();
-		CreateBasicStructure cbs = new CreateBasicStructure();
+		ParseFromBiojava cbs = new ParseFromBiojava();
 		Map<Integer, PDBGroup> totMap = new HashMap<Integer, PDBGroup>();
 		// Parse the data into the basic data structure
 		cbs.createFromJavaStruct(pdbId, totMap);
