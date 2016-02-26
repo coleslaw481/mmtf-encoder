@@ -32,7 +32,7 @@ public class CalphaDistBean {
 	// The list of sequence information
 	private  Map<Integer, PDBGroup> groupMap = new HashMap<Integer, PDBGroup>();
 	// Delta and run length
-	private byte[]  groupNumList;
+	private byte[] groupNumList;
 	private byte[] groupTypeList;
 	private byte[] secStructList;
 	// For the big arrays split into two -> one of 32 bit ints, one of 16
@@ -185,6 +185,5 @@ public class CalphaDistBean {
 	public void setNumBonds(int numBonds) {
 		this.numBonds = numBonds;
 	}
-
 
 }

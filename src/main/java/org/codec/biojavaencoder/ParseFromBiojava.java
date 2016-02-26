@@ -338,7 +338,7 @@ public class ParseFromBiojava {
 		headerStruct.setNumChains(chainCounter);
 		headerStruct.setPdbCode(bioJavaStruct.getPDBCode());
 	}
-	
+
 	/**
 	 * Function to add a calpha group
 	 * @param calphaGroupsPerChain
@@ -415,7 +415,7 @@ public class ParseFromBiojava {
 				addCalpha(a, props, res_num, thisResNum);
 			}
 		}
-		
+
 	}
 
 
@@ -428,31 +428,21 @@ public class ParseFromBiojava {
 	private void updateCalpha(Group totG, List<Atom> cAlphaGroup, Atom a, Boolean isInCalpha) {
 		// NOW THE CALPHA / PHOSPHATE / LIGAND STUFF
 		// GET THE CALPHA
-		if(totG.getChemComp().getPolymerType()!=null){
-			if(totG.getChemComp().getPolymerType().equals(PolymerType.peptide)==true){
-				if (a.getName().equals("CA") && a.getElement().toString().equals("C")){
-					// Now add the calpha
-					cAlphaGroup.add(a);
-					isInCalpha= true;
-				}
-			}
-			// GET THE PHOSPHATE
-			else if(totG.getChemComp().getPolymerType().equals(PolymerType.POLYNUCLEOTIDE_ONLY)==true){
-				// Nucleotide core co-ordinates	
-				if(a.getName().equals("P")){	
-					cAlphaGroup.add(a);
-					isInCalpha= true;
-				}
-			}
+		if (a.getName().equals("CA") && a.getElement().toString().equals("C")){
+			// Now add the calpha
+			cAlphaGroup.add(a);
+			isInCalpha= true;
+		}
+		// GET THE PHOSPHATE
+		if(a.getName().equals("P")){	
+			cAlphaGroup.add(a);
+			isInCalpha= true;
 		}
 		// GET THE LIGANDS
-		else{
-			if(totG.isWater()==false && totG.getType().name().equals("HETATM")){
-				cAlphaGroup.add(a);
-				isInCalpha= true;
-			}
+		if(totG.isWater()==false && totG.getType().name().equals("HETATM")){
+			cAlphaGroup.add(a);
+			isInCalpha= true;
 		}
-		
 	}
 
 
@@ -571,7 +561,7 @@ public class ParseFromBiojava {
 		for(Chain c: bioJavaStruct.getChains()){
 			chainMap.put(c.getInternalChainID(), c.getChainID());
 		}
-		
+
 
 		for (Map.Entry<Integer, BioAssemblyInfo> entry : inputBioAss.entrySet()) {
 			Map<Matrix4d,BiologicalAssemblyTransformationNew> matSet = new HashMap<Matrix4d,BiologicalAssemblyTransformationNew>();
@@ -598,7 +588,7 @@ public class ParseFromBiojava {
 				else{
 					continue;
 				}
-				
+
 				Matrix4d thisMat = transform.getTransformationMatrix();
 				double[] outList = new double[16];
 				// 
@@ -729,7 +719,7 @@ public class ParseFromBiojava {
 		List<Integer> bondOrder = new ArrayList<Integer>();
 
 		List<List<Integer>> totList = new ArrayList<List<Integer>>();
-		
+
 		for (int i = 0; i < n; i++) {
 			// Get the  atom
 			Atom a = atoms.get(i);
@@ -837,6 +827,6 @@ public class ParseFromBiojava {
 	}
 
 
-	
+
 
 }
