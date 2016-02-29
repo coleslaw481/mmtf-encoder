@@ -25,7 +25,7 @@ import org.biojava.nbio.structure.ResidueNumber;
 import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.StructureException;
 import org.biojava.nbio.structure.StructureIO;
-import org.biojava.nbio.structure.io.mmcif.chem.PolymerType;
+import org.biojava.nbio.structure.io.mmcif.model.ChemComp;
 import org.biojava.nbio.structure.quaternary.BioAssemblyInfo;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyTransformation;
 import org.biojava.nbio.structure.secstruc.DSSPParser;
@@ -258,6 +258,7 @@ public class ParseFromBiojava {
 								continue;
 							}
 							theseAtoms.add(a);
+							
 						}
 					}
 					// Get any bonds between groups
@@ -272,7 +273,8 @@ public class ParseFromBiojava {
 					if (hashToRes.containsKey(hashCode)==false){
 						// Make a new group
 						PDBGroup outGroup = new PDBGroup();
-						// 
+						// Set the one letter code
+						outGroup.setSingleLetterCode(totG.getChemComp().getOne_letter_code());
 						if(atomInfo.remove(0)=="ATOM"){
 							outGroup.setHetFlag(false);
 						}

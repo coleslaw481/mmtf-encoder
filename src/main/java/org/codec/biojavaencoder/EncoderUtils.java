@@ -51,7 +51,7 @@ public class EncoderUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	private byte[] integersToBytes(List<Integer> values) throws IOException
+	public byte[] integersToBytes(List<Integer> values) throws IOException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
@@ -162,7 +162,7 @@ public class EncoderUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	private byte[] integersToSmallBytes(List<Integer> values) throws IOException {
+	public byte[] integersToSmallBytes(List<Integer> values) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
 		for(int i: values)

@@ -51,7 +51,9 @@ public class CalphaDistBean {
 	// List to store the chainids
 	private byte[] chainList;
 	// List to store the number of groups per chain
-	private int[] groupsPerChain;	
+	private int[] groupsPerChain;
+	// Store the one letter amino acid sequence of the protein
+	private char[] oneLetterAminSeq;
 	
 	public String getPdbId() {
 		return pdbId;
@@ -184,6 +186,12 @@ public class CalphaDistBean {
 	}
 	public void setNumBonds(int numBonds) {
 		this.numBonds = numBonds;
+	}
+	public char[] getOneLetterAminSeq() {
+		return oneLetterAminSeq;
+	}
+	public void setOneLetterAminSeq(char[] oneLetterAminSeq) {
+		this.oneLetterAminSeq = oneLetterAminSeq;
 	}
 
 }
