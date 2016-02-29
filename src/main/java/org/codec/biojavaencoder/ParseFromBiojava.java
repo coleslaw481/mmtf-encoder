@@ -25,7 +25,6 @@ import org.biojava.nbio.structure.ResidueNumber;
 import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.StructureException;
 import org.biojava.nbio.structure.StructureIO;
-import org.biojava.nbio.structure.io.mmcif.model.ChemComp;
 import org.biojava.nbio.structure.quaternary.BioAssemblyInfo;
 import org.biojava.nbio.structure.quaternary.BiologicalAssemblyTransformation;
 import org.biojava.nbio.structure.secstruc.DSSPParser;
@@ -37,9 +36,9 @@ import org.codec.dataholders.BioAssemblyInfoNew;
 import org.codec.dataholders.BioDataStruct;
 import org.codec.dataholders.BiologicalAssemblyTransformationNew;
 import org.codec.dataholders.CalphaBean;
-import org.codec.dataholders.PDBGroup;
 import org.codec.dataholders.CodeHolders;
 import org.codec.dataholders.HeaderBean;
+import org.codec.dataholders.PDBGroup;
 
 
 public class ParseFromBiojava {
@@ -116,74 +115,18 @@ public class ParseFromBiojava {
 	 * @throws StructureException
 	 */
 	public void genFromJs(Structure bioJavaStruct, Map<Integer, PDBGroup> bioStructMap) throws IOException, StructureException{
-		SecStrucCalc ssp = new SecStrucCalc();
-		try{
-			ssp.calculate(bioJavaStruct, true);
-		}
-
-		catch(StructureException e) {
-			try{
-				DSSPParser.fetch(bioJavaStruct.getPDBCode(), bioJavaStruct, true); //download from PDB the DSSP result
-			}
-			catch(FileNotFoundException enew){
-			}
-			catch(Exception bige){
-				System.out.println(bige);
-			}
-		}
+		// Generate the secondary structure
+		genSecStruct(bioJavaStruct);
+		// Set the header information
+		setHeaderInfo(bioJavaStruct);
 		// Get the number of models
 		Integer numModels = bioJavaStruct.nrModels();
-		headerStruct.setPdbCode(bioJavaStruct.getPDBCode());
-
-		// Now get hte xtalographic info
-		PDBCrystallographicInfo xtalInfo = bioJavaStruct.getCrystallographicInfo();
-		CrystalCell xtalCell = xtalInfo.getCrystalCell();
-		SpaceGroup spaceGroup = xtalInfo.getSpaceGroup();
-		if(xtalCell==null){
-
-		}else{
-
-			headerStruct.getUnitCell().add((float) xtalCell.getA());
-			headerStruct.getUnitCell().add((float) xtalCell.getB());
-			headerStruct.getUnitCell().add((float) xtalCell.getC());
-			headerStruct.getUnitCell().add((float) xtalCell.getAlpha());
-			headerStruct.getUnitCell().add((float) xtalCell.getBeta());
-			headerStruct.getUnitCell().add((float) xtalCell.getGamma());
-
-			if(spaceGroup==null){
-				// This could be the I21 shown here
-				headerStruct.setSpaceGroup("NA");
-			}
-			else{
-				headerStruct.setSpaceGroup(spaceGroup.getShortSymbol());
-			}
-		}
-
-
-		// GET THE HEADER INFORMATION
-		PDBHeader header = bioJavaStruct.getPDBHeader();
-		Map<Integer, BioAssemblyInfoNew> outMap = transformBioAssembly(bioJavaStruct, header);
-		headerStruct.setBioAssembly(outMap);
-		List<List<Integer>> bioStructList= new ArrayList<List<Integer>>();
 		bioStruct.setNumModels(numModels);
+		// Set these maps and lists
+		List<List<Integer>> bioStructList= new ArrayList<List<Integer>>();
 		Map<Integer,Integer> hashToRes = new HashMap<Integer,Integer>();
 		Map<Integer,Integer> hashToCalphaRes = new HashMap<Integer,Integer>();
-		headerStruct.setTitle(header.getTitle());
-		headerStruct.setDescription(header.getDescription());
-		headerStruct.setClassification(header.getClassification());
-		headerStruct.setDepDate(header.getDepDate());
-		headerStruct.setModDate(header.getModDate());
-		headerStruct.setResolution(header.getResolution());
-		headerStruct.setrFree(header.getRfree());
-		JournalArticle myJournal = header.getJournalArticle();
-		try{
-			headerStruct.setDoi(myJournal.getDoi());
-		}
-		catch(NullPointerException e){
-
-		}
-		// headerStruct.setAuthors(header.getAuthors());
-		// Set these containers
+		// Set these counters
 		int atomCounter = 0;
 		int chainCounter = 0;
 		int resCounter = 0;
@@ -205,13 +148,12 @@ public class ParseFromBiojava {
 		headerStruct.setAsymChainList(charAsymChainList);
 		int[] groupsPerChain = new int[totChains];
 		headerStruct.setGroupsPerChain(groupsPerChain);
-		int[] calphaGroupsPerChain = new int[totChains];
-
-		calphaStruct.setGroupsPerChain(calphaGroupsPerChain);
 		headerStruct.setSequence(new ArrayList<String>());
 		int calphaResCounter = 0;
 		int bondCounter = 0;
 
+		int[] calphaGroupsPerChain = new int[totChains];
+		calphaStruct.setGroupsPerChain(calphaGroupsPerChain);
 		// Get all the atoms
 		List<Atom> totAtoms = getAllAtoms(bioJavaStruct);
 		for (int i=0; i<numModels; i++){
@@ -236,7 +178,6 @@ public class ParseFromBiojava {
 				// Add this chain to the list
 				chainList.add(c.getChainID());
 				// Now put this in this map
-				//				headerStruct.getChainMap().put(c.getChainID(), c.getAtomGroups().size());
 				chainCounter+=1;
 				List<Integer> newChainList = new ArrayList<Integer>();
 				bioStructList.add(newChainList);
@@ -244,60 +185,18 @@ public class ParseFromBiojava {
 				String chain_id = c.getChainID();
 				int numBonds = 0;
 				for (Group totG : c.getAtomGroups()) {
+					// Get the pdb id
 					String res_id = totG.getPDBName();
-					Set<Atom> uniqueAtoms = new HashSet<Atom>();
-					List<Atom> theseAtoms = new ArrayList<Atom>();
-					for(Atom a: totG.getAtoms()){
-						theseAtoms.add(a);
-						uniqueAtoms.add(a);
-					}
-					List<Group> altLocs = totG.getAltLocs();
-					for(Group thisG: altLocs){
-						for(Atom a: thisG.getAtoms()){
-							if(uniqueAtoms.contains(a)){ 
-								continue;
-							}
-							theseAtoms.add(a);
-							
-						}
-					}
+					// Get the atoms for this group
+					List<Atom> theseAtoms = getAtomsForGroup(totG);
 					// Get any bonds between groups
 					getInterGroupBond(theseAtoms, totAtoms, atomCounter);
 					// Count the number of bonds
 					// Now loop through and get the coords
-					// Get the atomic info required - bioStruct is the unique identifier of the group 
-					List<String> atomInfo = getAtomInfo(theseAtoms);
-					int hashCode = getHashFromStringList(atomInfo);
-					newChainList.add(hashCode);
-					// If we need bioStruct new information 
-					if (hashToRes.containsKey(hashCode)==false){
-						// Make a new group
-						PDBGroup outGroup = new PDBGroup();
-						// Set the one letter code
-						outGroup.setSingleLetterCode(totG.getChemComp().getOne_letter_code());
-						if(atomInfo.remove(0)=="ATOM"){
-							outGroup.setHetFlag(false);
-						}
-						else{
-							outGroup.setHetFlag(true);
-						}
-						outGroup.setGroupName(atomInfo.remove(0));
-						outGroup.setAtomInfo(atomInfo);
-						// Now get the bond list (lengths, orders and indices)
-						createBondList(theseAtoms, outGroup); 
-						getCharges(theseAtoms, outGroup);
-						// 
-						bioStructMap.put(resCounter, outGroup);
-						hashToRes.put(hashCode, resCounter);
-						bioStruct.getResOrder().add(resCounter);
-						resCounter+=1;
-						numBonds = outGroup.getBondOrders().size();
-					}
-					else{
-						// Add this to the residue order
-						bioStruct.getResOrder().add(hashToRes.get(hashCode));	
-						numBonds = bioStructMap.get(hashToRes.get(hashCode)).getBondOrders().size();
-					}
+
+					// Generate the group level data
+					numBonds = genGroupData(theseAtoms, totG, resCounter, newChainList, hashToRes, bioStructMap);
+
 					// Add the number of bonds 
 					bondCounter+=numBonds;
 
@@ -340,6 +239,153 @@ public class ParseFromBiojava {
 		headerStruct.setNumChains(chainCounter);
 		headerStruct.setPdbCode(bioJavaStruct.getPDBCode());
 	}
+	
+	/**
+	 * Function to get a list of atoms for a group
+	 * @param totG
+	 * @return
+	 */
+	private List<Atom> getAtomsForGroup(Group totG) {
+		Set<Atom> uniqueAtoms = new HashSet<Atom>();
+		List<Atom> theseAtoms = new ArrayList<Atom>();
+		for(Atom a: totG.getAtoms()){
+			theseAtoms.add(a);
+			uniqueAtoms.add(a);
+		}
+		List<Group> altLocs = totG.getAltLocs();
+		for(Group thisG: altLocs){
+			for(Atom a: thisG.getAtoms()){
+				if(uniqueAtoms.contains(a)){ 
+					continue;
+				}
+				theseAtoms.add(a);
+				
+			}
+		}
+		return theseAtoms;
+	}
+
+
+	/**
+	 * Function to generate the group data
+	 * @param theseAtoms
+	 * @param totG
+	 * @param resCounter
+	 * @param newChainList
+	 * @param hashToRes
+	 * @param bioStructMap
+	 * @return
+	 */
+	private int genGroupData(List<Atom> theseAtoms, Group totG, int resCounter, List<Integer> newChainList, Map<Integer, Integer> hashToRes, Map<Integer, PDBGroup> bioStructMap) {
+		int numBonds;
+		// Get the 
+		List<String> atomInfo = getAtomInfo(theseAtoms);
+		// Get the atomic info required - bioStruct is the unique identifier of the group 
+		int hashCode = getHashFromStringList(atomInfo);
+		newChainList.add(hashCode);
+		// If we need bioStruct new information 
+		if (hashToRes.containsKey(hashCode)==false){
+			// Make a new group
+			PDBGroup outGroup = new PDBGroup();
+			// Set the one letter code
+			outGroup.setSingleLetterCode(totG.getChemComp().getOne_letter_code());
+			if(atomInfo.remove(0)=="ATOM"){
+				outGroup.setHetFlag(false);
+			}
+			else{
+				outGroup.setHetFlag(true);
+			}
+			outGroup.setGroupName(atomInfo.remove(0));
+			outGroup.setAtomInfo(atomInfo);
+			// Now get the bond list (lengths, orders and indices)
+			createBondList(theseAtoms, outGroup); 
+			getCharges(theseAtoms, outGroup);
+			// 
+			bioStructMap.put(resCounter, outGroup);
+			hashToRes.put(hashCode, resCounter);
+			bioStruct.getResOrder().add(resCounter);
+			resCounter+=1;
+			numBonds = outGroup.getBondOrders().size();
+		}
+		else{
+			// Add this to the residue order
+			bioStruct.getResOrder().add(hashToRes.get(hashCode));	
+			numBonds = bioStructMap.get(hashToRes.get(hashCode)).getBondOrders().size();
+		}
+		return numBonds;
+	}
+
+
+	private void setHeaderInfo(Structure bioJavaStruct) {
+		headerStruct.setPdbCode(bioJavaStruct.getPDBCode());
+		// Now get hte xtalographic info
+		PDBCrystallographicInfo xtalInfo = bioJavaStruct.getCrystallographicInfo();
+		CrystalCell xtalCell = xtalInfo.getCrystalCell();
+		SpaceGroup spaceGroup = xtalInfo.getSpaceGroup();
+		if(xtalCell==null){
+
+		}else{
+
+			headerStruct.getUnitCell().add((float) xtalCell.getA());
+			headerStruct.getUnitCell().add((float) xtalCell.getB());
+			headerStruct.getUnitCell().add((float) xtalCell.getC());
+			headerStruct.getUnitCell().add((float) xtalCell.getAlpha());
+			headerStruct.getUnitCell().add((float) xtalCell.getBeta());
+			headerStruct.getUnitCell().add((float) xtalCell.getGamma());
+
+			if(spaceGroup==null){
+				// This could be the I21 shown here
+				headerStruct.setSpaceGroup("NA");
+			}
+			else{
+				headerStruct.setSpaceGroup(spaceGroup.getShortSymbol());
+			}
+		}
+		// GET THE HEADER INFORMATION
+		PDBHeader header = bioJavaStruct.getPDBHeader();
+		Map<Integer, BioAssemblyInfoNew> outMap = transformBioAssembly(bioJavaStruct, header);
+		headerStruct.setBioAssembly(outMap);
+		headerStruct.setTitle(header.getTitle());
+		headerStruct.setDescription(header.getDescription());
+		headerStruct.setClassification(header.getClassification());
+		headerStruct.setDepDate(header.getDepDate());
+		headerStruct.setModDate(header.getModDate());
+		headerStruct.setResolution(header.getResolution());
+		headerStruct.setrFree(header.getRfree());
+		JournalArticle myJournal = header.getJournalArticle();
+		try{
+			headerStruct.setDoi(myJournal.getDoi());
+		}
+		catch(NullPointerException e){
+
+		}
+		
+	}
+
+
+	/** 
+	 * Function to generate the secondary structuee for a biojava structure object
+	 * @param bioJavaStruct
+	 */
+	private void genSecStruct(Structure bioJavaStruct) {
+		SecStrucCalc ssp = new SecStrucCalc();
+		try{
+			ssp.calculate(bioJavaStruct, true);
+		}
+
+		catch(StructureException e) {
+			try{
+				DSSPParser.fetch(bioJavaStruct.getPDBCode(), bioJavaStruct, true); //download from PDB the DSSP result
+			}
+			catch(FileNotFoundException enew){
+			}
+			catch(Exception bige){
+				System.out.println(bige);
+			}
+		}
+		
+	}
+
 
 	/**
 	 * Function to add a calpha group
