@@ -305,7 +305,7 @@ public class EncoderUtils {
 		calphaOut.setGroupsPerChain(calphaStruct.getGroupsPerChain());
 		// Set this header info
 		calphaOut.setChainsPerModel(inHeader.getChainsPerModel());
-		calphaOut.setGroupsPerChain(inHeader.getGroupsPerChain());
+		calphaOut.setGroupsPerChain(calphaStruct.getGroupsPerChain());
 		calphaOut.setChainList(inHeader.getChainList());
 		calphaOut.setNumAtoms(calphaStruct.getNumAtoms());
 		// Write the secondary stucture out

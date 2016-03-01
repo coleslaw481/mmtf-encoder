@@ -58,9 +58,7 @@ public class ParseFromBiojava {
 	private Map<Integer, Integer> hashToCalphaRes;
 	private Map<Integer, PDBGroup> calphaBioStructMap;
 	private int chainCounter;
-	private int calphaResCounter=0;
-	private boolean isInCalpha;
-	
+	private int calphaResCounter=0;	
 	// A map for the different names of groups
 	private static final Map<String, String> myMap;
 	static {
@@ -303,7 +301,6 @@ public class ParseFromBiojava {
 
 					// Set whether or not this is a calpha
 					List<Atom> cAlphaGroup = new ArrayList<Atom>();
-					isInCalpha = false;
 					for (Atom a : theseAtoms) {
 						// Update the structure
 						updateStruct(a, chain_id, res_id, res_num, c);
@@ -437,7 +434,7 @@ public class ParseFromBiojava {
 	private void addCalphaGroup(List<Atom> cAlphaGroup,SecStrucState props, ResidueNumber res_num, String singleLetterCode) {
 		// Generate a variable of the residue numner
 		int thisResNum;
-		if(isInCalpha){
+		if(cAlphaGroup.size()>0){
 			calphaGroupsPerChain[chainCounter] = calphaGroupsPerChain[chainCounter]+1;
 			List<String> calphaAtomInfo = getAtomInfo(cAlphaGroup);
 			/// Now consider the C-Alpha, phosophate and ligand cases
@@ -514,17 +511,14 @@ public class ParseFromBiojava {
 		if (a.getName().equals("CA") && a.getElement().toString().equals("C")){
 			// Now add the calpha
 			cAlphaGroup.add(a);
-			isInCalpha= true;
 		}
 		// GET THE PHOSPHATE
 		if(a.getName().equals("P")){	
 			cAlphaGroup.add(a);
-			isInCalpha= true;
 		}
 		// GET THE LIGANDS
 		if(totG.isWater()==false && totG.getType().name().equals("HETATM")){
 			cAlphaGroup.add(a);
-			isInCalpha= true;
 		}
 	}
 
