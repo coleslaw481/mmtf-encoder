@@ -166,6 +166,9 @@ public class ParseFromBiojava {
 		int bondCounter = 0;
 
 		int[] calphaGroupsPerChain = new int[totChains];
+		for(int i=0; i<totChains; i++){
+			calphaGroupsPerChain[i] = 0;
+		}
 		calphaStruct.setGroupsPerChain(calphaGroupsPerChain);
 		// Get all the atoms
 		List<Atom> totAtoms = getAllAtoms(bioJavaStruct);
@@ -220,8 +223,6 @@ public class ParseFromBiojava {
 				groupsPerChain[chainCounter] += c.getAtomGroups().size();
 				// Set the number of groups per internal chain
 				groupsPerInternalChain[internalChainCounter] = c.getAtomGroups().size();				
-				
-				calphaGroupsPerChain[chainCounter] = 0;
 				// Add this chain to the list
 				chainList.add(c.getChainID());
 				
