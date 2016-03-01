@@ -37,12 +37,14 @@ public class HeaderBean {
 	private List<String> sequence;
 	// Add this to store the model information
 	private int[] chainsPerModel;
+	private int[] asymChainsPerModel;
 	// List to store the chainids
 	private byte[] chainList;
 	// List to store the chainids
 	private byte[] asymChainList;
 	// List to store the number of groups per chain
 	private int[] groupsPerChain;
+	private int[] asymGroupsPerChain;
 	// LOTS OF OTHER STUFF HERE -> TBD
 	private String spaceGroup;
 	private List<Float> unitCell = new ArrayList<Float>(); 
@@ -181,5 +183,17 @@ public class HeaderBean {
 	}
 	public void setNumBonds(int numBonds) {
 		this.numBonds = numBonds;
+	}
+	public int[] getAsymChainsPerModel() {
+		return asymChainsPerModel;
+	}
+	public void setAsymChainsPerModel(int[] asymChainsPerModel) {
+		this.asymChainsPerModel = asymChainsPerModel;
+	}
+	public int[] getAsymGroupsPerChain() {
+		return asymGroupsPerChain;
+	}
+	public void setAsymGroupsPerChain(int[] asymGroupsPerChain) {
+		this.asymGroupsPerChain = asymGroupsPerChain;
 	}	
 }

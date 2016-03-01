@@ -96,6 +96,10 @@ public class EncoderUtils {
 		thisDistBeanTot.setPdbId(bioBean.getPdbCode());
 		thisDistBeanTot.setInsCodeList(bioBean.get_atom_site_pdbx_PDB_ins_code());
 		thisDistBeanTot.setAltLabelList(bioBean.get_atom_site_label_alt_id());
+		// Copy the asym data
+		thisDistBeanTot.setInternalChainList(inHeader.getAsymChainList());
+		thisDistBeanTot.setInternalChainsPerModel(inHeader.getAsymChainsPerModel());
+		thisDistBeanTot.setInternalGroupsPerChain(inHeader.getAsymGroupsPerChain());
 		// Now get this list
 		thisDistBeanTot.setBondAtomList(cm.integersToBytes(inStruct.getInterGroupBondInds()));
 		thisDistBeanTot.setBondOrderList(cm.integersToSmallBytes(inStruct.getInterGroupBondOrders()));

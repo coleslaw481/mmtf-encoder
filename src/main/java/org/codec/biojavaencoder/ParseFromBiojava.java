@@ -129,24 +129,37 @@ public class ParseFromBiojava {
 		// Set these counters
 		int atomCounter = 0;
 		int chainCounter = 0;
+		int internalChainCounter = 0;
 		int resCounter = 0;
 		int totChains = 0;
+		int totAsymChains = 0;
 		// Get the total number of chains
 		for (int i=0; i<numModels; i++){		
-			totChains += bioJavaStruct.getChains().size();
+			totAsymChains += bioJavaStruct.getChains().size();
+			Set<String> thisChainIdSet = new HashSet<String>();
+
+			for(Chain c: bioJavaStruct.getChains(i)){
+				thisChainIdSet.add(c.getInternalChainID());
+			}
+			// Get the size of this set
+			totChains += thisChainIdSet.size();	
 		}
 
 		Map<Integer, PDBGroup> calphaBioStructMap = new HashMap<Integer, PDBGroup>();
 		// Get these lists to keep track of everthing - and to give  a datastrcutrue at the end
 		// List of chains per model
 		int[] chainsPerModel = new int[numModels];
+		int[] internalChainsPerModel = new int[numModels];
 		// Set this list
 		headerStruct.setChainsPerModel(chainsPerModel);
+		headerStruct.setAsymChainsPerModel(internalChainsPerModel);
 		byte[] charChainList = new byte[totChains*4];
-		byte[] charAsymChainList = new byte[totChains*4];
+		byte[] charInternalChainList = new byte[totAsymChains*4];
 		headerStruct.setChainList(charChainList);
-		headerStruct.setAsymChainList(charAsymChainList);
+		headerStruct.setAsymChainList(charInternalChainList);
 		int[] groupsPerChain = new int[totChains];
+		int[] groupsPerInternalChain = new int[totAsymChains];
+		headerStruct.setAsymGroupsPerChain(groupsPerInternalChain);
 		headerStruct.setGroupsPerChain(groupsPerChain);
 		headerStruct.setSequence(new ArrayList<String>());
 		int calphaResCounter = 0;
@@ -165,20 +178,55 @@ public class ParseFromBiojava {
 			bioStruct.setPdbCode(bioJavaStruct.getPDBCode());
 			ArrayList<String> chainList = new ArrayList<String>();
 			// Set the number of chains in this model
-			chainsPerModel[i] = chains.size();
+			internalChainsPerModel[i] = chains.size();
+			// Get the number of unique ones
+			Set<String> chainIdSet = new HashSet<String>();
+			for(Chain c : chains){
+				String intChainId = c.getInternalChainID();
+				chainIdSet.add(intChainId);
+			}
+			chainsPerModel[i] = chainIdSet.size();
+			// Now make a map
+			HashMap<String, Integer>chainIdMap = new HashMap<String,Integer>();
 			//headerStruct.getModelList().add(chainList);
 			// Take the atomic information and place in a Hashmap
 			for (Chain c : chains) {
+				// Set the sequence 
 				headerStruct.getSequence().add(c.getSeqResSequence());
+				// Now get the chain counter
+				if(chainIdMap.containsKey(c.getInternalChainID())==false){
+					// if it's the first one it's zero
+					if(chainIdMap.size()==0){
+						// Do nothing
+					}
+					else{
+					// Get the old max
+					chainCounter = Collections.max(chainIdMap.values());
+					// Increment by one
+					chainCounter+=1;
+					}
+					chainIdMap.put(c.getInternalChainID(), chainCounter);
+				}
+				// Or get the old one
+				else{
+					chainCounter = chainIdMap.get(c.getInternalChainID());
+				}
+				
 				// Set the auth chain id
-				setChainId(c, charChainList, chainCounter);
+				setChainId(c.getInternalChainID(), charChainList, chainCounter);
+				// Set the asym chain id	
+				setChainId(c.getChainID(), charInternalChainList, internalChainCounter);
 				// Set the number of groups per chain
-				groupsPerChain[chainCounter] = c.getAtomGroups().size();
+				groupsPerChain[chainCounter] += c.getAtomGroups().size();
+				// Set the number of groups per internal chain
+				groupsPerInternalChain[internalChainCounter] = c.getAtomGroups().size();				
+				
 				calphaGroupsPerChain[chainCounter] = 0;
 				// Add this chain to the list
 				chainList.add(c.getChainID());
-				// Now put this in this map
-				chainCounter+=1;
+				
+				// Always increment this
+				internalChainCounter+=1;
 				List<Integer> newChainList = new ArrayList<Integer>();
 				bioStructList.add(newChainList);
 				// Get the groups
@@ -195,8 +243,40 @@ public class ParseFromBiojava {
 					// Now loop through and get the coords
 
 					// Generate the group level data
-					numBonds = genGroupData(theseAtoms, totG, resCounter, newChainList, hashToRes, bioStructMap);
-
+					// Get the 
+					List<String> atomInfo = getAtomInfo(theseAtoms);
+					// Get the atomic info required - bioStruct is the unique identifier of the group 
+					int hashCode = getHashFromStringList(atomInfo);
+					newChainList.add(hashCode);
+					// If we need bioStruct new information 
+					if (hashToRes.containsKey(hashCode)==false){
+						// Make a new group
+						PDBGroup outGroup = new PDBGroup();
+						// Set the one letter code
+						outGroup.setSingleLetterCode(totG.getChemComp().getOne_letter_code());
+						if(atomInfo.remove(0)=="ATOM"){
+							outGroup.setHetFlag(false);
+						}
+						else{
+							outGroup.setHetFlag(true);
+						}
+						outGroup.setGroupName(atomInfo.remove(0));
+						outGroup.setAtomInfo(atomInfo);
+						// Now get the bond list (lengths, orders and indices)
+						createBondList(theseAtoms, outGroup); 
+						getCharges(theseAtoms, outGroup);
+						// 
+						bioStructMap.put(resCounter, outGroup);
+						hashToRes.put(hashCode, resCounter);
+						bioStruct.getResOrder().add(resCounter);
+						resCounter+=1;
+						numBonds = outGroup.getBondOrders().size();
+					}
+					else{
+						// Add this to the residue order
+						bioStruct.getResOrder().add(hashToRes.get(hashCode));	
+						numBonds = bioStructMap.get(hashToRes.get(hashCode)).getBondOrders().size();
+					}
 					// Add the number of bonds 
 					bondCounter+=numBonds;
 
@@ -265,55 +345,6 @@ public class ParseFromBiojava {
 		return theseAtoms;
 	}
 
-
-	/**
-	 * Function to generate the group data
-	 * @param theseAtoms
-	 * @param totG
-	 * @param resCounter
-	 * @param newChainList
-	 * @param hashToRes
-	 * @param bioStructMap
-	 * @return
-	 */
-	private int genGroupData(List<Atom> theseAtoms, Group totG, int resCounter, List<Integer> newChainList, Map<Integer, Integer> hashToRes, Map<Integer, PDBGroup> bioStructMap) {
-		int numBonds;
-		// Get the 
-		List<String> atomInfo = getAtomInfo(theseAtoms);
-		// Get the atomic info required - bioStruct is the unique identifier of the group 
-		int hashCode = getHashFromStringList(atomInfo);
-		newChainList.add(hashCode);
-		// If we need bioStruct new information 
-		if (hashToRes.containsKey(hashCode)==false){
-			// Make a new group
-			PDBGroup outGroup = new PDBGroup();
-			// Set the one letter code
-			outGroup.setSingleLetterCode(totG.getChemComp().getOne_letter_code());
-			if(atomInfo.remove(0)=="ATOM"){
-				outGroup.setHetFlag(false);
-			}
-			else{
-				outGroup.setHetFlag(true);
-			}
-			outGroup.setGroupName(atomInfo.remove(0));
-			outGroup.setAtomInfo(atomInfo);
-			// Now get the bond list (lengths, orders and indices)
-			createBondList(theseAtoms, outGroup); 
-			getCharges(theseAtoms, outGroup);
-			// 
-			bioStructMap.put(resCounter, outGroup);
-			hashToRes.put(hashCode, resCounter);
-			bioStruct.getResOrder().add(resCounter);
-			resCounter+=1;
-			numBonds = outGroup.getBondOrders().size();
-		}
-		else{
-			// Add this to the residue order
-			bioStruct.getResOrder().add(hashToRes.get(hashCode));	
-			numBonds = bioStructMap.get(hashToRes.get(hashCode)).getBondOrders().size();
-		}
-		return numBonds;
-	}
 
 
 	private void setHeaderInfo(Structure bioJavaStruct) {
@@ -500,12 +531,12 @@ public class ParseFromBiojava {
 	 * @param charChainList
 	 * @param chainCounter
 	 */
-	private void setChainId(Chain c, byte[] charChainList, int chainCounter) {
+	private void setChainId(String chainId, byte[] charChainList, int chainCounter) {
 		// A char array to store the chars
 		char[] outChar = new char[4];
 		// The lenght of this chain id
-		int chainIdLen = c.getChainID().length();
-		c.getChainID().getChars(0, chainIdLen, outChar, 0);
+		int chainIdLen =  chainId.length();
+		chainId.getChars(0, chainIdLen, outChar, 0);
 		// Set the bytrarray - chain ids can be up to 4 chars - pad with empty bytes
 		charChainList[chainCounter*4+0] = (byte) outChar[0];
 		if(chainIdLen>1){
