@@ -305,7 +305,7 @@ public class ParseFromBiojava {
 						atomCounter+=1;
 					}
 					// Now add this group - if there is something to consider
-					addCalphaGroup(calphaGroupsPerChain, cAlphaGroup, newChainList, hashToCalphaRes, isInCalpha, calphaBioStructMap,chainCounter,calphaResCounter, props, res_num);
+					addCalphaGroup(calphaGroupsPerChain, cAlphaGroup, newChainList, hashToCalphaRes, isInCalpha, calphaBioStructMap,chainCounter,calphaResCounter, props, res_num, totG.getChemComp().getOne_letter_code());
 				}
 			}
 		}
@@ -432,7 +432,9 @@ public class ParseFromBiojava {
 	 * @param res_num
 	 */
 	private void addCalphaGroup(int[] calphaGroupsPerChain, List<Atom> cAlphaGroup, List<Integer> newChainList,
-			Map<Integer, Integer> hashToCalphaRes, boolean isInCalpha, Map<Integer, PDBGroup> calphaBioStructMap, int chainCounter, int calphaResCounter, SecStrucState props, ResidueNumber res_num) {
+			Map<Integer, Integer> hashToCalphaRes, boolean isInCalpha, Map<Integer, PDBGroup> calphaBioStructMap,
+			int chainCounter, int calphaResCounter, SecStrucState props, ResidueNumber res_num, String singleLetterCode) {
+		// Generate a variable of the residue numner
 		int thisResNum;
 		if(isInCalpha){
 			calphaGroupsPerChain[chainCounter-1] = calphaGroupsPerChain[chainCounter-1]+1;
@@ -444,6 +446,7 @@ public class ParseFromBiojava {
 			if (hashToCalphaRes.containsKey(calphaHashCode)==false){
 				// Make a new group
 				PDBGroup outGroup = new PDBGroup();
+				outGroup.setSingleLetterCode(singleLetterCode);
 				// 
 				if(calphaAtomInfo.remove(0)=="ATOM"){
 					outGroup.setHetFlag(false);
