@@ -51,6 +51,25 @@ public class ParseFromBiojava {
 	private CodeHolders codeHolder = new CodeHolders();
 	// Now a list to store the bonds
 	private  List<Bond> totBonds = new ArrayList<Bond>();
+	
+	// Now these private vars
+	private int[] calphaGroupsPerChain;
+	private List<Integer> newChainList;
+	private Map<Integer, Integer> hashToCalphaRes;
+	private Map<Integer, PDBGroup> calphaBioStructMap;
+	private int chainCounter;
+	private int calphaResCounter=0;
+	private boolean isInCalpha;
+	
+	// A map for the different names of groups
+	private static final Map<String, String> myMap;
+	static {
+		Map<String, String> aMap = new HashMap<String, String>();
+		aMap.put("hetatm", "HETATM");
+		aMap.put("amino", "ATOM");
+		aMap.put("nucleotide", "ATOM");
+		myMap = Collections.unmodifiableMap(aMap);
+	}
 
 	public BioDataStruct getBioStruct() {
 		return bioStruct;
@@ -79,16 +98,6 @@ public class ParseFromBiojava {
 
 	public void setHeaderStruct(HeaderBean headerStruct) {
 		this.headerStruct = headerStruct;
-	}
-
-	// A map for the different names of groups
-	private static final Map<String, String> myMap;
-	static {
-		Map<String, String> aMap = new HashMap<String, String>();
-		aMap.put("hetatm", "HETATM");
-		aMap.put("amino", "ATOM");
-		aMap.put("nucleotide", "ATOM");
-		myMap = Collections.unmodifiableMap(aMap);
 	}
 
 
@@ -125,10 +134,10 @@ public class ParseFromBiojava {
 		// Set these maps and lists
 		List<List<Integer>> bioStructList= new ArrayList<List<Integer>>();
 		Map<Integer,Integer> hashToRes = new HashMap<Integer,Integer>();
-		Map<Integer,Integer> hashToCalphaRes = new HashMap<Integer,Integer>();
+		hashToCalphaRes = new HashMap<Integer,Integer>();
 		// Set these counters
 		int atomCounter = 0;
-		int chainCounter = 0;
+		chainCounter = 0;
 		int internalChainCounter = 0;
 		int resCounter = 0;
 		int totChains = 0;
@@ -137,7 +146,6 @@ public class ParseFromBiojava {
 		for (int i=0; i<numModels; i++){		
 			totAsymChains += bioJavaStruct.getChains().size();
 			Set<String> thisChainIdSet = new HashSet<String>();
-
 			for(Chain c: bioJavaStruct.getChains(i)){
 				thisChainIdSet.add(c.getInternalChainID());
 			}
@@ -145,7 +153,7 @@ public class ParseFromBiojava {
 			totChains += thisChainIdSet.size();	
 		}
 
-		Map<Integer, PDBGroup> calphaBioStructMap = new HashMap<Integer, PDBGroup>();
+		calphaBioStructMap = new HashMap<Integer, PDBGroup>();
 		// Get these lists to keep track of everthing - and to give  a datastrcutrue at the end
 		// List of chains per model
 		int[] chainsPerModel = new int[numModels];
@@ -162,10 +170,9 @@ public class ParseFromBiojava {
 		headerStruct.setAsymGroupsPerChain(groupsPerInternalChain);
 		headerStruct.setGroupsPerChain(groupsPerChain);
 		headerStruct.setSequence(new ArrayList<String>());
-		int calphaResCounter = 0;
 		int bondCounter = 0;
 
-		int[] calphaGroupsPerChain = new int[totChains];
+		calphaGroupsPerChain = new int[totChains];
 		for(int i=0; i<totChains; i++){
 			calphaGroupsPerChain[i] = 0;
 		}
@@ -228,7 +235,7 @@ public class ParseFromBiojava {
 				
 				// Always increment this
 				internalChainCounter+=1;
-				List<Integer> newChainList = new ArrayList<Integer>();
+				newChainList = new ArrayList<Integer>();
 				bioStructList.add(newChainList);
 				// Get the groups
 				String chain_id = c.getChainID();
@@ -296,17 +303,17 @@ public class ParseFromBiojava {
 
 					// Set whether or not this is a calpha
 					List<Atom> cAlphaGroup = new ArrayList<Atom>();
-					boolean isInCalpha = false;
+					isInCalpha = false;
 					for (Atom a : theseAtoms) {
 						// Update the structure
 						updateStruct(a, chain_id, res_id, res_num, c);
 						// Update hte calpha
-						updateCalpha(totG, cAlphaGroup, a, isInCalpha);
+						updateCalpha(totG, cAlphaGroup, a);
 						// Increment the atom counter
 						atomCounter+=1;
 					}
 					// Now add this group - if there is something to consider
-					addCalphaGroup(calphaGroupsPerChain, cAlphaGroup, newChainList, hashToCalphaRes, isInCalpha, calphaBioStructMap,chainCounter,calphaResCounter, props, res_num, totG.getChemComp().getOne_letter_code());
+					addCalphaGroup(cAlphaGroup, props, res_num, totG.getChemComp().getOne_letter_code());
 				}
 			}
 		}
@@ -375,6 +382,7 @@ public class ParseFromBiojava {
 		}
 		// GET THE HEADER INFORMATION
 		PDBHeader header = bioJavaStruct.getPDBHeader();
+		
 		Map<Integer, BioAssemblyInfoNew> outMap = transformBioAssembly(bioJavaStruct, header);
 		headerStruct.setBioAssembly(outMap);
 		headerStruct.setTitle(header.getTitle());
@@ -420,25 +428,17 @@ public class ParseFromBiojava {
 
 
 	/**
-	 * Function to add a calpha group
-	 * @param calphaGroupsPerChain
+	 * 
 	 * @param cAlphaGroup
-	 * @param newChainList
-	 * @param hashToCalphaRes
-	 * @param isInCalpha
-	 * @param calphaBioStructMap
-	 * @param chainCounter
-	 * @param calphaResCounter
 	 * @param props
 	 * @param res_num
+	 * @param singleLetterCode
 	 */
-	private void addCalphaGroup(int[] calphaGroupsPerChain, List<Atom> cAlphaGroup, List<Integer> newChainList,
-			Map<Integer, Integer> hashToCalphaRes, boolean isInCalpha, Map<Integer, PDBGroup> calphaBioStructMap,
-			int chainCounter, int calphaResCounter, SecStrucState props, ResidueNumber res_num, String singleLetterCode) {
+	private void addCalphaGroup(List<Atom> cAlphaGroup,SecStrucState props, ResidueNumber res_num, String singleLetterCode) {
 		// Generate a variable of the residue numner
 		int thisResNum;
 		if(isInCalpha){
-			calphaGroupsPerChain[chainCounter-1] = calphaGroupsPerChain[chainCounter-1]+1;
+			calphaGroupsPerChain[chainCounter] = calphaGroupsPerChain[chainCounter]+1;
 			List<String> calphaAtomInfo = getAtomInfo(cAlphaGroup);
 			/// Now consider the C-Alpha, phosophate and ligand cases
 			int calphaHashCode = getHashFromStringList(calphaAtomInfo);
@@ -508,7 +508,7 @@ public class ParseFromBiojava {
 	 * @param cAlphaGroup
 	 * @param a
 	 */
-	private void updateCalpha(Group totG, List<Atom> cAlphaGroup, Atom a, Boolean isInCalpha) {
+	private void updateCalpha(Group totG, List<Atom> cAlphaGroup, Atom a) {
 		// NOW THE CALPHA / PHOSPHATE / LIGAND STUFF
 		// GET THE CALPHA
 		if (a.getName().equals("CA") && a.getElement().toString().equals("C")){
@@ -642,9 +642,8 @@ public class ParseFromBiojava {
 		// Generate a map including internal asymid
 		Map<String, String> chainMap = new HashMap<String, String>();
 		for(Chain c: bioJavaStruct.getChains()){
-			chainMap.put(c.getInternalChainID(), c.getChainID());
+			chainMap.put(c.getChainID(), c.getInternalChainID());
 		}
-
 
 		for (Map.Entry<Integer, BioAssemblyInfo> entry : inputBioAss.entrySet()) {
 			Map<Matrix4d,BiologicalAssemblyTransformationNew> matSet = new HashMap<Matrix4d,BiologicalAssemblyTransformationNew>();
