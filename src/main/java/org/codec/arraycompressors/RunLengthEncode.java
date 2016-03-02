@@ -1,5 +1,6 @@
 package org.codec.arraycompressors;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -7,8 +8,13 @@ import java.util.ArrayList;
  * @author abradley
  *
  */
-public class RunLengthEncode implements IntArrayCompressor  {
+public class RunLengthEncode implements IntArrayCompressor, Serializable  {
 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -793325266722283046L;
 
 	public ArrayList<Integer> compressIntArray(ArrayList<Integer> inArray) {
 

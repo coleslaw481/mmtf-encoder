@@ -1,5 +1,6 @@
 package org.codec.biocompressors;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,12 @@ import org.codec.dataholders.NoFloatDataStruct;
  * @author abradley
  *
  */
-public class CompressDoubles implements BioCompressor {
+public class CompressDoubles implements BioCompressor, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8942639615818134183L;
 
 	@SuppressWarnings("static-access")
 	public CoreSingleStructure compresStructure(CoreSingleStructure coress) throws IllegalAccessException, InvocationTargetException {

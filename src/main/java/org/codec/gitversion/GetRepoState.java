@@ -1,9 +1,15 @@
 package org.codec.gitversion;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Properties;
 
-public class GetRepoState {
+public class GetRepoState implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3997275420826350281L;
 
 	/**
 	 * Function to read the git repo information and return a class containing that data
