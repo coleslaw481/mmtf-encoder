@@ -39,7 +39,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * @author Anthony Bradley
  */
 public class EncoderUtils implements Serializable {
-	
 	/**
 	 * 
 	 */
