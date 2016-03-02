@@ -1,5 +1,6 @@
 package org.codec.arraycompressors;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -7,8 +8,13 @@ import java.util.ArrayList;
  * @author abradley
  *
  */
-public class FindDeltas implements IntArrayCompressor {
+public class FindDeltas implements IntArrayCompressor, Serializable {
 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8404400061650470813L;
 
 	public ArrayList<Integer> compressIntArray(ArrayList<Integer> inArray) {
 		// 

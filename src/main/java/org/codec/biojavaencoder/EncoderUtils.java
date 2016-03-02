@@ -6,6 +6,7 @@ package org.codec.biojavaencoder;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +38,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * 
  * @author Anthony Bradley
  */
-public class EncoderUtils {
-	
+public class EncoderUtils implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 376413981384858130L;
 	private GetRepoState grs = new GetRepoState();
 	private BioCompressor doublesToInts = new CompressDoubles();
 	private IntArrayCompressor deltaComp = new FindDeltas();
