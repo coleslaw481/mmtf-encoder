@@ -570,7 +570,7 @@ public class ParseFromBiojava {
 			List<Chain> chains = bioJavaStruct.getModel(i);
 			for (Chain c : chains) {
 				for (Group g : c.getAtomGroups()) {
-					for(Atom a: g.getAtoms()){
+					for(Atom a: getAtomsForGroup(g)){
 						theseAtoms.add(a);					
 					}
 				}
