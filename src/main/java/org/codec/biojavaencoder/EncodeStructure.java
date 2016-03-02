@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.biojava.nbio.structure.Structure;
 import org.biojava.nbio.structure.StructureException;
 import org.codec.dataholders.PDBGroup;
 import org.codec.biojavaencoder.EncoderUtils;
@@ -33,6 +34,27 @@ public class EncodeStructure {
 	}
 	
 	/**
+	 * Function to generate an MMTF from a biojava structure
+	 * @param bioJavaStruct
+	 * @return
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 * @throws IOException
+	 * @throws StructureException
+	 */
+	public byte[] encodeFromBiojava(Structure bioJavaStruct) throws IllegalAccessException, InvocationTargetException, IOException, StructureException{
+		// Get the two utility classes
+		EncoderUtils eu = new EncoderUtils();
+		ParseFromBiojava cbs = new ParseFromBiojava();
+		Map<Integer, PDBGroup> totMap = new HashMap<Integer, PDBGroup>();
+		// Parse the data into the basic data structure
+		cbs.genFromJs(bioJavaStruct, totMap);
+		// Compress the data and get it back out
+		return eu.compressMainData(cbs.getBioStruct(), cbs.getHeaderStruct());
+	}
+	
+	
+	/**
 	 * Function to encode the backbond data given a PDB id
 	 * @param pdbId
 	 * @return
@@ -48,6 +70,8 @@ public class EncodeStructure {
 		cbs.createFromJavaStruct(pdbId, totMap);
 		// Compress the data and get it back out
 		return eu.getMessagePack(eu.compCAlpha(cbs.getCalphaStruct(), cbs.getHeaderStruct()));
-	}	
+	}
+	
+	
 	
 }
