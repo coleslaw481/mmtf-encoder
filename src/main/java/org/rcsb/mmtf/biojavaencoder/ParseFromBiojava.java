@@ -607,11 +607,7 @@ public class ParseFromBiojava {
 		// Here we need to iterate through and get the chain ids and the matrices
 		Map<Integer, BioAssemblyInfo> inputBioAss = header.getBioAssemblies();
 		Map<Integer, BioAssemblyInfoNew> outMap = new HashMap<Integer,BioAssemblyInfoNew>();
-		// Generate a map including internal asymid
-		Map<String, String> chainMap = new HashMap<String, String>();
-		for(Chain c: bioJavaStruct.getChains()){
-			chainMap.put(c.getChainID(), c.getInternalChainID());
-		}
+
 
 		for (Map.Entry<Integer, BioAssemblyInfo> entry : inputBioAss.entrySet()) {
 			Map<Matrix4d,BiologicalAssemblyTransformationNew> matSet = new HashMap<Matrix4d,BiologicalAssemblyTransformationNew>();
@@ -629,15 +625,8 @@ public class ParseFromBiojava {
 
 				// Get the chain and the matrix
 				String thisId = transform.getId();
-				String oldChain = transform.getChainId();
-				String thisChain = null;
-				// Get the chain identifier 
-				if(chainMap.containsKey(oldChain)){
-					thisChain = chainMap.get(oldChain);
-				}
-				else{
-					continue;
-				}
+				// Get's the chain id -> this is the asym id
+				String thisChain = transform.getChainId();
 
 				Matrix4d thisMat = transform.getTransformationMatrix();
 				double[] outList = new double[16];
