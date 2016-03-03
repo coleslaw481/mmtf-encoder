@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.codec.dataholders.PDBGroup;
+import org.rcsb.mmtf.dataholders.PDBGroup;
 
 /**
  * A bean to store C-Alpha / DNA backbone and ligand information

@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.biojava.nbio.structure.StructureException;
-import org.codec.dataholders.PDBGroup;
 import org.codec.biojavaencoder.EncoderUtils;
+import org.rcsb.mmtf.dataholders.PDBGroup;
 
 public class EncodeStructure {
 

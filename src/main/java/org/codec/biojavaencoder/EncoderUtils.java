@@ -24,11 +24,11 @@ import org.codec.dataholders.CalphaBean;
 import org.codec.dataholders.CalphaDistBean;
 import org.codec.dataholders.CoreSingleStructure;
 import org.codec.dataholders.HeaderBean;
-import org.codec.dataholders.MmtfBean;
 import org.codec.dataholders.NoFloatDataStruct;
 import org.codec.dataholders.NoFloatDataStructBean;
 import org.codec.gitversion.GetRepoState;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
+import org.rcsb.mmtf.dataholders.MmtfBean;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 

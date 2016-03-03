@@ -22,7 +22,7 @@ import org.biojava.nbio.structure.StructureException;
 import org.biojava.nbio.structure.StructureIO;
 import org.biojava.nbio.structure.align.util.AtomCache;
 import org.biojava.nbio.structure.io.FileParsingParameters;
-import org.codec.dataholders.PDBGroup;
+import org.rcsb.mmtf.dataholders.PDBGroup;
 
 /**
  * Class to store the basic biological data from an MMCIF file

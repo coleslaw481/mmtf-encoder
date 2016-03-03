@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.rcsb.mmtf.dataholders.BioAssemblyInfoNew;
+import org.rcsb.mmtf.dataholders.PDBGroup;
+
 /**
  * A bean to store C-Alpha / DNA backbone and ligand information - in a format that can 
  * then be efficiently sent as messagepack

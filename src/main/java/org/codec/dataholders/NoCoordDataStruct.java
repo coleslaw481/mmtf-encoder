@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.codec.dataholders.PDBGroup;
+
+import org.rcsb.mmtf.dataholders.PDBGroup;
 
 /**
  * A bean to store information about non coordinate information - fields are related strongly

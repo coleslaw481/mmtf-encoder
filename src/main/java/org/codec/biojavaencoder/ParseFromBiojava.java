@@ -32,13 +32,13 @@ import org.biojava.nbio.structure.secstruc.SecStrucCalc;
 import org.biojava.nbio.structure.secstruc.SecStrucState;
 import org.biojava.nbio.structure.xtal.CrystalCell;
 import org.biojava.nbio.structure.xtal.SpaceGroup;
-import org.codec.dataholders.BioAssemblyInfoNew;
 import org.codec.dataholders.BioDataStruct;
-import org.codec.dataholders.BiologicalAssemblyTransformationNew;
 import org.codec.dataholders.CalphaBean;
-import org.codec.dataholders.CodeHolders;
 import org.codec.dataholders.HeaderBean;
-import org.codec.dataholders.PDBGroup;
+import org.rcsb.mmtf.dataholders.BioAssemblyInfoNew;
+import org.rcsb.mmtf.dataholders.BiologicalAssemblyTransformationNew;
+import org.rcsb.mmtf.dataholders.CodeHolders;
+import org.rcsb.mmtf.dataholders.PDBGroup;
 
 
 public class ParseFromBiojava {
@@ -198,7 +198,7 @@ public class ParseFromBiojava {
 			HashMap<String, Integer>chainIdMap = new HashMap<String,Integer>();
 			//headerStruct.getModelList().add(chainList);
 			// Take the atomic information and place in a Hashmap
-			for (Chain c : chains) {
+			for (Chain c : chains) {				
 				// Set the sequence 
 				headerStruct.getSequence().add(c.getSeqResSequence());
 				// Now get the chain counter
