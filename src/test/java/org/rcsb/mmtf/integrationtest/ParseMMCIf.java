@@ -9,9 +9,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.vecmath.Matrix4d;
 
@@ -92,24 +95,24 @@ public class ParseMMCIf {
 		//Standard structure
 		pdbId ="4cup";
 		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));
-//		// Weird NMR structure
-//		pdbId ="1o2f";
-//		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));
-//		// Another weird structure (jose's suggestion) 
-//		pdbId ="3zyb";
-//		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));
-//		// B-DNA structure
-//		pdbId ="1bna";
-//		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));	
-//		// DNA structure
-//		pdbId = "4y60";
-//		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));	
-//		// Large viral capsid
-//		pdbId ="3j3q";
-//		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));
-//		// Ribosome
-//		pdbId = "4v5a";
-//		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));		
+		// Weird NMR structure
+		pdbId ="1o2f";
+		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));
+		// Another weird structure (jose's suggestion) 
+		pdbId ="3zyb";
+		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));
+		// B-DNA structure
+		pdbId ="1bna";
+		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));	
+		// DNA structure
+		pdbId = "4y60";
+		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));	
+		// Large viral capsid
+		pdbId ="3j3q";
+		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));
+		// Ribosome
+		pdbId = "4v5a";
+		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));		
 	}
 
 	/**
@@ -159,27 +162,22 @@ public class ParseMMCIf {
 			// Check there's the same number of transforms
 			assertEquals(valueOne.getTransforms().size(), valueTwo.getTransforms().size());
 			// Build a map of chain id to matrix 4d
-			Map<String, Matrix4d> mapOne = new HashMap<>();
-			Map<String, Matrix4d> mapTwo = new HashMap<>();
+			Set<String> keySetOne = new TreeSet<>();
+			Set<String> keySetTwo = new TreeSet<>();
+			Set<String> valSetOne = new TreeSet<>();
+			Set<String> valSetTwo = new TreeSet<>();
 			for(int i= 0; i< valueOne.getTransforms().size();i++){
 				BiologicalAssemblyTransformation transformOne = valueOne.getTransforms().get(i);
 				BiologicalAssemblyTransformation transformTwo = valueTwo.getTransforms().get(i);
 				// Check these are the same
-				mapOne.put(transformOne.getChainId(), transformOne.getTransformationMatrix());
-				mapTwo.put(transformTwo.getChainId(), transformTwo.getTransformationMatrix());
+ 				keySetOne.add(transformOne.getChainId());
+				keySetTwo.add(transformTwo.getChainId());
+				valSetOne.add(transformOne.getTransformationMatrix().toString());
+				valSetTwo.add(transformTwo.getTransformationMatrix().toString());
 			}
-			assertEquals(mapOne.keySet(), mapTwo.keySet());
-			Collection<Matrix4d> matricesOne = mapOne.values();
-			List<String> matsOne = new ArrayList<>();
-			for(Matrix4d mat4d: matricesOne){
-				matsOne.add(mat4d.toString());
-			}
-			Collection<Matrix4d> matricesTwo = mapTwo.values();
-			List<String> matsTwo = new ArrayList<>();
-			for(Matrix4d mat4d: matricesTwo){
-				matsTwo.add(mat4d.toString());
-			}
-			assertEquals(matsOne,matsTwo);
+			assertEquals(keySetOne, keySetTwo);
+			assertEquals(valSetOne, valSetTwo);
+
 		}
 	}
 

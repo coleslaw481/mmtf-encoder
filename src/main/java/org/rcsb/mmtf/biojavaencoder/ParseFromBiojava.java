@@ -634,7 +634,7 @@ public class ParseFromBiojava {
 				for(int i=0; i<4; i++){
 					for(int j=0; j<4; j++){
 						// Now set this element
-						outList[j*4+i] = thisMat.getElement(i,j);
+						outList[i*4+j] = thisMat.getElement(i,j);
 					}
 				}
 				if(matSet.containsKey(thisMat)){
