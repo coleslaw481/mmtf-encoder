@@ -258,10 +258,10 @@ public class ParseFromBiojava {
 					SecStrucState props = (SecStrucState) totG.getProperty("secstruc");
 					//
 					if(props==null){
-						bioStruct.getSecStruct().add(codeHolder.dsspMap.get("NA"));
+						bioStruct.getSecStruct().add(codeHolder.getDsspMap().get("NA"));
 					}
 					else{
-						bioStruct.getSecStruct().add(codeHolder.dsspMap.get(props.getType().name));
+						bioStruct.getSecStruct().add(codeHolder.getDsspMap().get(props.getType().name));
 					}
 					// Now add the residue sequnece number
 					bioStruct.get_atom_site_auth_seq_id().add(res_num.getSeqNum());
@@ -573,11 +573,11 @@ public class ParseFromBiojava {
 		// Now set the sec structure
 		//
 		if(props==null){
-			calphaStruct.getSecStruct().add(codeHolder.dsspMap.get("NA"));
+			calphaStruct.getSecStruct().add(codeHolder.getDsspMap().get("NA"));
 
 		}
 		else{
-			calphaStruct.getSecStruct().add(codeHolder.dsspMap.get(props.getType().name));
+			calphaStruct.getSecStruct().add(codeHolder.getDsspMap().get(props.getType().name));
 		}
 
 	}
