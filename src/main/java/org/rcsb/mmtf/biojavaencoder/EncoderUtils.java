@@ -34,32 +34,39 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 
 /**
- * This class finds an mmCIF file and saves it as a csv file 
- * 
+ * This class finds an mmCIF file and saves it as a csv file .
+ *
  * @author Anthony Bradley
  */
 public class EncoderUtils implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 376413981384858130L;
-	private GetRepoState grs = new GetRepoState();
-	private BioCompressor doublesToInts = new CompressDoubles();
-	private IntArrayCompressor deltaComp = new FindDeltas();
-	private IntArrayCompressor runLenghtComp = new RunLengthEncode();
-
 	
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = 376413981384858130L;
+	
+	/** The class to get the git repo start */
+	private GetRepoState grs = new GetRepoState();
+	
+	/** A converter of doubles to ints. */
+	private BioCompressor doublesToInts = new CompressDoubles();
+	
+	/** The delta compressor of arrays. */
+	private IntArrayCompressor deltaComp = new FindDeltas();
+	
+	/** The run length compressor of arrays. */
+	private IntArrayCompressor runLengthComp = new RunLengthEncode();
+
 	/**
-	 * Function to take a list of integers (as List<Integer>)
-	 * @param values
-	 * @return
-	 * @throws IOException
+	 * Take a list of integers (as List<Integer>).
+	 *
+	 * @param inputList the input integer array
+	 * @return the byte[] output 
+	 * @throws IOException Occurred writing the int to the stream.
 	 */
-	public byte[] integersToBytes(List<Integer> values) throws IOException
+	public byte[] integersToBytes(List<Integer> inputList) throws IOException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(baos);
-		for(Integer i: values)
+		for(Integer i: inputList)
 		{
 			dos.writeInt(i);
 		}
@@ -68,34 +75,36 @@ public class EncoderUtils implements Serializable {
 
 
 	/**
-	 * Function to get a messagepack from a bean
-	 * @param bioBean
-	 * @return
-	 * @throws JsonProcessingException
+	 * Get a messagepack from a bean.
+	 *
+	 * @param inputObject the input object
+	 * @return the message pack
+	 * @throws JsonProcessingException the json processing exception - most likely related 
+	 * to serialization.
 	 */
-	public byte[] getMessagePack(Object bioBean) throws JsonProcessingException{
+	public byte[] getMessagePack(Object inputObject) throws JsonProcessingException{
 		com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper(new MessagePackFactory());
-		byte[] inBuf = objectMapper.writeValueAsBytes(bioBean);
+		byte[] inBuf = objectMapper.writeValueAsBytes(inputObject);
 		return inBuf;
 	}
 
 
 	/**
-	 * Function to compress the biological and header data into a combined data structure
-	 * @param inStruct
-	 * @param inHeader
+	 * Compress the biological and header data into a combined data structure.
+	 *
+	 * @param inStruct the in struct
+	 * @param inHeader the in header
 	 * @return the byte array for the compressed data
-	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException
-	 * @throws IOException
+	 * @throws IOException reading byte array
+	 * @throws Exception 
 	 */
-	public byte[] compressMainData(BioDataStruct inStruct, HeaderBean inHeader) throws IllegalAccessException, InvocationTargetException, IOException {
+	public byte[] compressMainData(BioDataStruct inStruct, HeaderBean inHeader) throws IOException {
 		EncoderUtils cm = new EncoderUtils();
-		// Compress the protein
-		CoreSingleStructure bdh = compressHadoopStruct(inStruct);
+		// Compress the protein 
+		CoreSingleStructure strucureData = compressHadoopStruct(inStruct);
 		// NOW SET UP THE 
 		MmtfBean thisDistBeanTot = new MmtfBean();
-		NoFloatDataStructBean bioBean = (NoFloatDataStructBean) bdh.findDataAsBean();
+		NoFloatDataStructBean bioBean = (NoFloatDataStructBean) strucureData.findDataAsBean();
 		// Copt these things
 		thisDistBeanTot.setPdbId(bioBean.getPdbCode());
 		thisDistBeanTot.setInsCodeList(bioBean.get_atom_site_pdbx_PDB_ins_code());
@@ -129,10 +138,11 @@ public class EncoderUtils implements Serializable {
 	}
 
 	/**
-	 * Function to add the required bytearrays to an mmtfbean
-	 * @param thisDistBeanTot
-	 * @param bioBean
-	 * @throws IOException
+	 * Add the required bytearrays to an mmtfbean.
+	 *
+	 * @param thisDistBeanTot the this dist bean tot
+	 * @param bioBean the bio bean
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private void addByteArrs(MmtfBean thisDistBeanTot, NoFloatDataStructBean bioBean) throws IOException {
 		EncoderUtils cm = new EncoderUtils();
@@ -163,10 +173,11 @@ public class EncoderUtils implements Serializable {
 
 
 	/**
-	 * Function to write a list of integers to 1 byte ints
-	 * @param values
-	 * @return
-	 * @throws IOException
+	 * Write a list of integers to 1 byte integers.
+	 *
+	 * @param values the values
+	 * @return the byte[]
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public byte[] integersToSmallBytes(List<Integer> values) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -179,10 +190,11 @@ public class EncoderUtils implements Serializable {
 	}
 
 	/**
-	 * Function to split an array into small and bgi integers
-	 * @param inArr
-	 * @return
-	 * @throws IOException
+	 * Split an array into small (2 byte) and big (4 byte) integers.
+	 *
+	 * @param inArr the in arr
+	 * @return the big and little
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public List<byte[]> getBigAndLittle(List<Integer> inArr) throws IOException{
 		List<byte[]>outArr = new ArrayList<byte[]>();
@@ -220,34 +232,37 @@ public class EncoderUtils implements Serializable {
 	}
 
 	/**
-	 * Utility function to gzip compress a byte[]
-	 * @param content
-	 * @return
+	 * Utility function to gzip compress a byte[].
+	 *
+	 * @param inputArray the input array
+	 * @return the byte[]
 	 */
-	public byte[] gzipCompress(byte[] content){
+	public byte[] gzipCompress(byte[] inputArray){
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		try{
 			GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-			gzipOutputStream.write(content);
+			gzipOutputStream.write(inputArray);
 			gzipOutputStream.close();
 		} catch(IOException e){
 			throw new RuntimeException(e);
 		}
-		System.out.printf("Compression %f\n", (1.0f * content.length/byteArrayOutputStream.size()));
+		System.out.printf("Compression %f\n", (1.0f * inputArray.length/byteArrayOutputStream.size()));
 		return byteArrayOutputStream.toByteArray();
 	}
 
 	/**
-	 * Function to compress the input biological data
-	 * @param bdh
-	 * @return
-	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException
+	 * Function to compress the input biological data.
+	 *
+	 * @param inputBioDataStruct the input data structure
+	 * @return a core single structure
+	 * @throws IllegalAccessException 
+	 * @throws InvocationTargetException 
+	 * @throws Exception The bean data copying didn't work - weird.
 	 */
-	public CoreSingleStructure compressHadoopStruct(BioDataStruct bdh) throws IllegalAccessException, InvocationTargetException{
+	public CoreSingleStructure compressHadoopStruct(BioDataStruct inputBioDataStruct) {
 
-		CoreSingleStructure outStruct = doublesToInts.compresStructure(bdh);
-
+		CoreSingleStructure outStruct;
+    outStruct = doublesToInts.compresStructure(inputBioDataStruct);
 		// Get the input structure
 		NoFloatDataStruct inStruct =  (NoFloatDataStruct) outStruct;
 		ArrayList<Integer> cartnX = (ArrayList<Integer>) inStruct.get_atom_site_Cartn_xInt();
@@ -261,16 +276,16 @@ public class EncoderUtils implements Serializable {
 		//		// Now the occupancy and BFACTOR -> VERY SMALL GAIN
 		inStruct.set_atom_site_B_iso_or_equivInt(deltaComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_B_iso_or_equivInt()));
 		// SMALL GAIN
-		inStruct.set_atom_site_occupancyInt(runLenghtComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_occupancyInt()));
+		inStruct.set_atom_site_occupancyInt(runLengthComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_occupancyInt()));
 		// Now the sequential numbers - huge gain - new order of good compressors
 		// Now runlength encode the residue order
 		inStruct.setResOrder(inStruct.getResOrder());
 		// THESE ONES CAN BE RUN LENGTH ON DELTA
 
 		// Check for negative counters
-		inStruct.set_atom_site_auth_seq_id(runLenghtComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_auth_seq_id())));
-		inStruct.set_atom_site_label_entity_poly_seq_num(runLenghtComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_label_entity_poly_seq_num())));
-		inStruct.set_atom_site_id(runLenghtComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_id())));
+		inStruct.set_atom_site_auth_seq_id(runLengthComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_auth_seq_id())));
+		inStruct.set_atom_site_label_entity_poly_seq_num(runLengthComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_label_entity_poly_seq_num())));
+		inStruct.set_atom_site_id(runLengthComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) inStruct.get_atom_site_id())));
 		//// NOW THE STRINGS  - small gain
 		StringArrayCompressor stringRunEncode = new RunLengthEncodeString();
 		inStruct.set_atom_site_label_alt_id(stringRunEncode.compressStringArray((ArrayList<String>) inStruct.get_atom_site_label_alt_id()));
@@ -280,11 +295,12 @@ public class EncoderUtils implements Serializable {
 	}
 
 	/**
-	 * 
-	 * @param calphaStruct
-	 * @param inHeader
-	 * @return
-	 * @throws IOException
+	 * Comp c alpha.
+	 *
+	 * @param calphaStruct the calpha struct
+	 * @param inHeader the in header
+	 * @return the calpha dist bean
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public CalphaDistBean compCAlpha(CalphaBean calphaStruct, HeaderBean inHeader) throws IOException {
 		EncoderUtils cm = new  EncoderUtils();
@@ -331,7 +347,7 @@ public class EncoderUtils implements Serializable {
 		calphaOut.setzCoordBig(bigAndLittleZ.get(0));
 		calphaOut.setzCoordSmall(bigAndLittleZ.get(1));	
 		// THESE ONES CAN BE RUN LENGTH ON DELTA
-		calphaOut.setGroupNumList(cm.integersToBytes(runLenghtComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) calphaStruct.get_atom_site_auth_seq_id()))));
+		calphaOut.setGroupNumList(cm.integersToBytes(runLengthComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) calphaStruct.get_atom_site_auth_seq_id()))));
 		return calphaOut;
 	}
 

@@ -11,24 +11,36 @@ import org.rcsb.mmtf.dataholders.CoreSingleStructure;
 import org.rcsb.mmtf.dataholders.NoFloatDataStruct;
 
 /**
- * Class to compress a structure by turning doubles to ints
- * @author abradley
+ * Class to compress a structure by turning doubles to integers.
+ * @author Anthony Bradley
  *
  */
 public class CompressDoubles implements BioCompressor, Serializable {
 
-	/**
-	 * 
-	 */
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -8942639615818134183L;
 
+	/* (non-Javadoc)
+	 * @see org.rcsb.mmtf.biocompressors.BioCompressor#compresStructure(org.rcsb.mmtf.dataholders.CoreSingleStructure)
+	 */
 	@SuppressWarnings("static-access")
-	public CoreSingleStructure compresStructure(CoreSingleStructure coress) throws IllegalAccessException, InvocationTargetException {
+	public CoreSingleStructure compresStructure(CoreSingleStructure coress) {
 		//  Take in the appropriate arrays 
 		BeanUtils bu = new BeanUtils();
 		BioDataStruct bioDataS = (BioDataStruct) coress;
 		NoFloatDataStruct noFloatDataS = new NoFloatDataStruct();
-		bu.copyProperties(noFloatDataS, bioDataS);
+		
+		try {
+      bu.copyProperties(noFloatDataS, bioDataS);
+    } catch (IllegalAccessException e) {
+      System.err.println("Unknown bug - copying bean data. Report as bug.");
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    } catch (InvocationTargetException e) {
+      System.err.println("Unknown bug - copying bean data. Report as bug.");
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
 		// Get all the arrays we want to compress
 		// Set the coordinates
 		noFloatDataS.set_atom_site_Cartn_xInt(getIntArrayFromDouble(bioDataS.get_atom_site_Cartn_x(),1000.0));
@@ -42,10 +54,11 @@ public class CompressDoubles implements BioCompressor, Serializable {
 	}
 	
 	/**
-	 * Function to return an int array from a float array
-	 * @param inArray
+	 * Function to return an int array from a float array.
+	 *
+	 * @param inArray the input array of floats
 	 * @param multiplier - the multiplication factor for conversion
-	 * @return
+	 * @return the integer array after conversion
 	 */
 	public List<Integer> getIntArrayFromFloat(List<Float> inArray, float multiplier) {
 		// Initialise the out array
@@ -59,10 +72,11 @@ public class CompressDoubles implements BioCompressor, Serializable {
 	}
 
 	/**
-	 * Function to return an int array from a double array
-	 * @param inArray
-	 * @param multiplier
-	 * @return
+	 * Function to return an int array from a double array.
+	 *
+	 * @param inArray the input array of doubles
+	 * @param multiplier the multiplier
+	 * @return the int array from double
 	 */
 	public List<Integer> getIntArrayFromDouble(List<Double> inArray, Double multiplier){
 		// Initialise the out array

@@ -4,37 +4,39 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * Class to encode an integer array with deltas
- * @author abradley
+ * Class to encode an integer array with deltas.
  *
+ * @author Anthony Bradley
  */
 public class FindDeltas implements IntArrayCompressor, Serializable {
 
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8404400061650470813L;
+  /** The Constant serialVersionUID. */
+  private static final long serialVersionUID = -8404400061650470813L;
 
-	public ArrayList<Integer> compressIntArray(ArrayList<Integer> inArray) {
-		// 
-    	ArrayList<Integer> outArray =  new ArrayList<Integer>();
-		int old_int = 0;
-	    for (int i = 0; i < inArray.size(); i++) {
-	    	// Get the value out here
-			int num_int = inArray.get(i);
-			if (i==0){
-				old_int = num_int;
-				outArray.add(num_int);
-			}
-			else{
-				int this_int = num_int - old_int;
-				outArray.add((int) this_int);
-				old_int = num_int;
-			}
-	    }
-		return outArray;
-	}
+  /* (non-Javadoc)
+   * @see org.rcsb.mmtf.arraycompressors.IntArray
+   * Compressor#compressIntArray(java.util.ArrayList)
+   */
+  public final ArrayList<Integer> compressIntArray(final ArrayList<Integer> inArray) {
+    // 
+    ArrayList<Integer> outArray =  new ArrayList<Integer>();
+    int oldInt = 0;
+    for (int i = 0; i < inArray.size(); i++) {
+      // Get the value out here
+      int numInt = inArray.get(i);
+      if (i==0){
+        oldInt = numInt;
+        outArray.add(numInt);
+      }
+      else{
+        int this_int = numInt - oldInt;
+        outArray.add((int) this_int);
+        oldInt = numInt;
+      }
+    }
+    return outArray;
+  }
 
 
 }

@@ -4,18 +4,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * Class to run length encode an integer array
- * @author abradley
+ * Class to run length encode an integer array.
+ * @author Anthony Bradley
  *
  */
 public class RunLengthEncode implements IntArrayCompressor, Serializable  {
 
 
-	/**
-	 * 
-	 */
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -793325266722283046L;
 
+	/* (non-Javadoc)
+	 * @see org.rcsb.mmtf.arraycompressors.IntArrayCompressor#compressIntArray(java.util.ArrayList)
+	 */
 	public ArrayList<Integer> compressIntArray(ArrayList<Integer> inArray) {
 
 		ArrayList<Integer> outArray =  new ArrayList<Integer>();

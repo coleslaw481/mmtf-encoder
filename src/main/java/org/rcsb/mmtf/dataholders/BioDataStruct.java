@@ -24,12 +24,15 @@ import org.biojava.nbio.structure.align.util.AtomCache;
 import org.biojava.nbio.structure.io.FileParsingParameters;
 import org.rcsb.mmtf.dataholders.PDBGroup;
 
+// TODO: Auto-generated Javadoc
 /**
- * Class to store the basic biological data from an MMCIF file
- * @author anthony
+ * Class to store the basic biological data from an MMCIF file.
  *
+ * @author Anthony Bradley
  */
 public class BioDataStruct extends BioDataStructBean implements CoreSingleStructure {
+	
+	/** The Constant myMap. */
 	// Function to update the BioDataStruct for a given 
 	private static final Map<String, String> myMap;
 	static {
@@ -40,44 +43,76 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		myMap = Collections.unmodifiableMap(aMap);
 	}
 
+	/**
+	 * Instantiates a new bio data struct.
+	 */
 	public BioDataStruct() {
 	}
-	public BioDataStruct(String in_code) throws IOException, StructureException{
-		getBioDataStructFromPDBId(in_code);
+	
+	/**
+	 * Instantiates a new bio data struct.
+	 *
+	 * @param inputPdbId the input pdb id
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws StructureException the structure exception
+	 */
+	public BioDataStruct(String inputPdbId) throws IOException, StructureException{
+		getBioDataStructFromPDBId(inputPdbId);
 	}
 
 	
-	public BioDataStructBean findDataAsBean() throws IllegalAccessException, InvocationTargetException{
+	/* (non-Javadoc)
+	 * @see org.rcsb.mmtf.dataholders.CoreSingleStructure#findDataAsBean()
+	 */
+	public BioDataStructBean findDataAsBean() {
 		// Cast this to the pure data
 		BioDataStructBean newData = new BioDataStructBean();
-		BeanUtils.copyProperties(newData, this);
+		try {
+      BeanUtils.copyProperties(newData, this);
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    } catch (InvocationTargetException e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
 		return newData;
 	}	
 
 
+	/* (non-Javadoc)
+	 * @see org.rcsb.mmtf.dataholders.CoreSingleStructure#findNumAtoms()
+	 */
 	public int findNumAtoms() {
 		return get_atom_site_Cartn_x().size();
 	}
 
 	/**
-	 * Function to get this BioDataStruct bean given a PDB id
-	 * @param input_id
-	 * @return
-	 * @throws IOException
-	 * @throws StructureException
+	 * Function to get this BioDataStruct bean given a PDB id.
+	 *
+	 * @param inputPdbId the input_id
+	 * @return the bio data struct from pdb id
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws StructureException the structure exception
 	 */
-	private BioDataStruct getBioDataStructFromPDBId(String input_id) throws IOException, StructureException {
+	private BioDataStruct getBioDataStructFromPDBId(String inputPdbId) throws IOException, StructureException {
 		AtomCache cache = new AtomCache();
 		cache.setUseMmCif(true);
 		FileParsingParameters params = cache.getFileParsingParams();
 		params.setLoadChemCompInfo(true);
 		params.setCreateAtomBonds(true);
 		StructureIO.setAtomCache(cache);
-		Structure my_struct = StructureIO.getStructure(input_id);
+		Structure my_struct = StructureIO.getStructure(inputPdbId);
 		return getBioDataStructFromBioJava(my_struct);
 		// and let's count how many chains are in this structure.
 	}
 
+	/**
+	 * Gets the bio data struct from bio java.
+	 *
+	 * @param my_struct the my_struct
+	 * @return the bio data struct from bio java
+	 */
 	private BioDataStruct getBioDataStructFromBioJava(Structure my_struct){
 		// Get the number of models
 		Integer numModels = my_struct.nrModels();
@@ -129,6 +164,12 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		return this;
 	}
 
+	/**
+	 * Gets the hash from string list.
+	 *
+	 * @param strings the strings
+	 * @return the hash from string list
+	 */
 	private int getHashFromStringList(List<String> strings){
 		int prime = 31;
 		int result = 1;
@@ -138,6 +179,13 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		}
 		return result;
 	}
+	
+	/**
+	 * Gets the atom info.
+	 *
+	 * @param g the g
+	 * @return the atom info
+	 */
 	private List<String> getAtomInfo(Group g){
 		int numAtoms = g.getAtoms().size();
 		int arraySize = numAtoms*2+2;
@@ -156,6 +204,13 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		}
 		return outString;
 	}
+	
+	/**
+	 * Creates the bond list.
+	 *
+	 * @param g the g
+	 * @param outGroup the out group
+	 */
 	private void createBondList(Group g, PDBGroup outGroup) {
 		List<Atom> atoms = g.getAtoms();
 		int n = atoms.size();
@@ -190,6 +245,12 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		outGroup.setBondIndices (intLToList(bondList));
 	}
 
+	/**
+	 * Int l to list.
+	 *
+	 * @param ints the ints
+	 * @return the list
+	 */
 	private List<Integer> intLToList(int[] ints){
 		List<Integer> intList = new ArrayList<Integer>();
 		for (int index = 0; index < ints.length; index++)
@@ -198,6 +259,17 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		}
 		return intList;
 	}
+	
+	/**
+	 * Update struct.
+	 *
+	 * @param a the a
+	 * @param chain_id the chain_id
+	 * @param res_id the res_id
+	 * @param res_num the res_num
+	 * @param c the c
+	 * @param g the g
+	 */
 	private void updateStruct(Atom a, String chain_id, String res_id,
 			ResidueNumber res_num, Chain c, Group g) {
 
@@ -283,6 +355,12 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 		this.get_atom_site_occupancy().add(a.getOccupancy());
 	}
 
+	/**
+	 * Fill data struct.
+	 *
+	 * @param key the key
+	 * @param part the part
+	 */
 	public void fillDataStruct(String key, Object part) {
 		// Function to fill a BioDataStrcut given a key -> which maps onto a field and an object (the value)
 		if (key=="_atom_site_id"){
@@ -337,6 +415,10 @@ public class BioDataStruct extends BioDataStructBean implements CoreSingleStruct
 			get_atom_site_occupancy().add((Float) part);
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.rcsb.mmtf.dataholders.CoreSingleStructure#findStructureCode()
+	 */
 	@Override
 	public String findStructureCode() {
 		// Get the PDB code

@@ -13,6 +13,6 @@ public interface BioCompressor {
 	 * @throws IllegalAccessException
 	 * @throws InvocationTargetException
 	 */
-	public CoreSingleStructure compresStructure(CoreSingleStructure coress) throws IllegalAccessException, InvocationTargetException;
+	public CoreSingleStructure compresStructure(CoreSingleStructure coress);
 
 }

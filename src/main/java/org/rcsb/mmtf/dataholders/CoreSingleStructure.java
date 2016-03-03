@@ -13,11 +13,11 @@ public interface CoreSingleStructure {
 	
 	/**
 	 * Function to return the data as a bean
-	 * @return
+	 * @return the data as a bean
 	 * @throws IllegalAccessException
 	 * @throws InvocationTargetException
 	 */
-	BioBean findDataAsBean() throws IllegalAccessException, InvocationTargetException;
+	BioBean findDataAsBean();
 
 	/**
 	 * Function to return the structure code

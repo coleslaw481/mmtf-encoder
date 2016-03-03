@@ -106,9 +106,6 @@ public class ParseMMCIf {
 		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));	
 		// DNA structure
 		pdbId = "4y60";
-		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));	
-		// Large viral capsid
-		pdbId ="3j3q";
 		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));
 		// Ribosome
 		pdbId = "4v5a";
