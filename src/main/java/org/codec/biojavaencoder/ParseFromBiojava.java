@@ -142,7 +142,7 @@ public class ParseFromBiojava {
 		int totAsymChains = 0;
 		// Get the total number of chains
 		for (int i=0; i<numModels; i++){		
-			totAsymChains += bioJavaStruct.getChains().size();
+			totAsymChains += bioJavaStruct.getChains(i).size();
 			Set<String> thisChainIdSet = new HashSet<String>();
 			for(Chain c: bioJavaStruct.getChains(i)){
 				thisChainIdSet.add(c.getInternalChainID());
@@ -570,7 +570,7 @@ public class ParseFromBiojava {
 			List<Chain> chains = bioJavaStruct.getModel(i);
 			for (Chain c : chains) {
 				for (Group g : c.getAtomGroups()) {
-					for(Atom a: g.getAtoms()){
+					for(Atom a: getAtomsForGroup(g)){
 						theseAtoms.add(a);					
 					}
 				}
