@@ -113,6 +113,10 @@ public class EncoderUtils implements Serializable {
 		thisDistBeanTot.setInternalChainList(inHeader.getAsymChainList());
 		thisDistBeanTot.setInternalChainsPerModel(inHeader.getAsymChainsPerModel());
 		thisDistBeanTot.setInternalGroupsPerChain(inHeader.getAsymGroupsPerChain());
+		// Get the seqres information
+		thisDistBeanTot.setSeqResGroupIds(cm.integersToBytes(runLengthComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) inHeader.getSeqResGroupIds()))));
+		thisDistBeanTot.setSequence(inHeader.getSequence());
+		thisDistBeanTot.setExperimentalMethods(inHeader.getExperimentalMethods());
 		// Now get this list
 		thisDistBeanTot.setBondAtomList(cm.integersToBytes(inStruct.getInterGroupBondInds()));
 		thisDistBeanTot.setBondOrderList(cm.integersToSmallBytes(inStruct.getInterGroupBondOrders()));

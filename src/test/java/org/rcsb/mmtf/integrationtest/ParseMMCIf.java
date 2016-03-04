@@ -101,6 +101,9 @@ public class ParseMMCIf {
 		// DNA structure
 		pdbId = "4y60";
 		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));
+		// Sugar structure
+    pdbId = "1skm";
+    assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));		
 		// Ribosome
 		pdbId = "4v5a";
 		assertTrue(checkIfAtomsSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp)));		
@@ -121,10 +124,10 @@ public class ParseMMCIf {
 		cache.setFileParsingParams(params);
 		EncodeStructure es = new EncodeStructure();
 		FileUtils.writeByteArrayToFile(new File("pathname"), es.encodeFromBiojava(StructureIO.getStructure(pdbId)));
-		DecodeStructure ds = new DecodeStructure();
 		byte[] inArr = FileUtils.readFileToByteArray(new File("pathname"));
 		BioJavaStructureDecoder bjsi = new BioJavaStructureDecoder();
-		ds.getStructFromByteArray(inArr, bjsi, pp);
+    DecodeStructure ds = new DecodeStructure(inArr);
+		ds.getStructFromByteArray(bjsi, pp);
 		Structure struct= bjsi.getStructure();
 		// Revert back
 		params.setUseInternalChainId(oldValue);
@@ -172,6 +175,22 @@ public class ParseMMCIf {
 		}
 	}
 
+	/**
+	 * Test of sequence and seqres group level information
+	 * @param structOne
+	 * @param structTwo
+	 * @return
+	 */
+	private boolean checkIfSeqResInfoSame(Structure structOne, Structure structTwo){
+	  return false;
+	}
+	
+	/**
+	 * Broad test of atom similarity
+	 * @param structOne
+	 * @param structTwo
+	 * @return
+	 */
 	private boolean checkIfAtomsSame(Structure structOne, Structure structTwo) {
 		// Firt check the bioassemblies
 		checkIfBioassemblySame(structOne, structTwo);

@@ -16,6 +16,7 @@ import org.biojava.nbio.structure.Atom;
 import org.biojava.nbio.structure.Bond;
 import org.biojava.nbio.structure.Chain;
 import org.biojava.nbio.structure.Element;
+import org.biojava.nbio.structure.ExperimentalTechnique;
 import org.biojava.nbio.structure.Group;
 import org.biojava.nbio.structure.GroupType;
 import org.biojava.nbio.structure.JournalArticle;
@@ -224,6 +225,13 @@ public class ParseFromBiojava {
 		headerStruct.setAsymGroupsPerChain(groupsPerInternalChain);
 		headerStruct.setGroupsPerChain(groupsPerChain);
 		headerStruct.setSequence(new ArrayList<String>());
+		// Find the experimental techniques
+		Set<ExperimentalTechnique> techniqueSet = bioJavaStruct.getPDBHeader().getExperimentalTechniques();
+		headerStruct.setExperimentalMethods(new ArrayList<String>());
+		for (ExperimentalTechnique currentTechnique : techniqueSet){
+	    headerStruct.getExperimentalMethods().add(currentTechnique.toString());
+		}		
+		headerStruct.setSeqResGroupIds(new ArrayList<Integer>());
 		int bondCounter = 0;
 
 		calphaGroupsPerChain = new int[totAsymChains];
@@ -231,6 +239,8 @@ public class ParseFromBiojava {
 			calphaGroupsPerChain[i] = 0;
 		}
 		calphaStruct.setGroupsPerChain(calphaGroupsPerChain);
+		
+
 		// Get all the atoms
 		List<Atom> totAtoms = getAllAtoms(bioJavaStruct);
 		for (int i=0; i<numModels; i++){
@@ -250,6 +260,8 @@ public class ParseFromBiojava {
 			chainsPerModel[i] = chainIdSet.size();
 			// Take the atomic information and place in a Hashmap
 			for (Chain biojavaChain: chains) {	
+        // Get the seq res groups for this chain
+	      List<Group> seqResGroups = biojavaChain.getSeqResGroups();
 				// Set the sequence 
 				headerStruct.getSequence().add(biojavaChain.getSeqResSequence());
 				// Set the auth chain id
@@ -266,6 +278,8 @@ public class ParseFromBiojava {
 				String currentChainId = biojavaChain.getChainID();
 				int numBonds = 0;
 				for (Group currentGroup : biojavaChain.getAtomGroups()) {
+				  // Set the seq res group id 
+				  headerStruct.getSeqResGroupIds().add(seqResGroups.indexOf(currentGroup));
 					// Get the pdb id
 					String res_id = currentGroup.getPDBName();
 					// Get the atoms for this group
