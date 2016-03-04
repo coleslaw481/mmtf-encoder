@@ -8,7 +8,7 @@ import org.rcsb.mmtf.biocompressors.CompressDoubles;
 import static org.junit.Assert.*;
 
 
-public class BioCompressorTest {
+public class TestBioCompressor {
 
 	@Test
 	public void floatToInt() {

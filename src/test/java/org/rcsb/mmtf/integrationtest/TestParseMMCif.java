@@ -32,13 +32,13 @@ import org.rcsb.mmtf.decoder.BioJavaStructureDecoder;
 import org.rcsb.mmtf.decoder.DecodeStructure;
 import org.rcsb.mmtf.decoder.ParsingParams;
 
-public class ParseMMCIf {
+public class TestParseMMCif {
 
 
 	private AtomCache cache;
 	private FileParsingParameters params;
 
-	public ParseMMCIf(){
+	public TestParseMMCif(){
 
 		cache = new AtomCache();
 		cache.setUseMmCif(true);

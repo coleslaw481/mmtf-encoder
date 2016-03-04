@@ -9,7 +9,7 @@ import org.rcsb.mmtf.arraycompressors.RunLengthEncodeString;
 
 import static org.junit.Assert.*;
 
-public class ArrayCompressorTests {
+public class TestArrayCompressors {
 
 	@Test
 	public void deltaTest() {

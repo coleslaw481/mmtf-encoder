@@ -265,6 +265,29 @@
 
 				<!-- other plugins -->
 			</plugins>
+
 		</pluginManagement>
+
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.1</version>
+				<configuration>
+					<aggregate>true</aggregate>
+					<breakiterator>true</breakiterator>
+					<quiet>true</quiet>
+					<source>1.8</source>
+					<verbose>false</verbose>
+					<linksource>true</linksource>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>3.0.3</version>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

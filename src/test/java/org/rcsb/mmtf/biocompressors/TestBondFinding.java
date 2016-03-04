@@ -19,7 +19,7 @@ import org.biojava.nbio.structure.io.LocalPDBDirectory.FetchBehavior;
 import org.biojava.nbio.structure.io.mmcif.ChemCompGroupFactory;
 import org.biojava.nbio.structure.io.mmcif.DownloadChemCompProvider;
 
-public class BondTests {
+public class TestBondFinding {
 
 
   @Test
