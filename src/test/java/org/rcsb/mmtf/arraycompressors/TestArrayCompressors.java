@@ -58,7 +58,7 @@ public class TestArrayCompressors {
 	
 
 	@Test
-	public void runLengthString() {
+	public void runLengthStringTest() {
 		// Generate the array
 		RunLengthEncodeString rle = new RunLengthEncodeString();
 		// Create the two arrays
