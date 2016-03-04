@@ -83,7 +83,7 @@ public class ParseFromBiojava {
 	/** The calpha group / residue counter. */
 	private int calphaResCounter;	
 	
-	/** The Constant myMap. Relates the group name to the type of atom id */
+	/** The Constant MY_MAP. Relates the group name to the type of atom id */
 	private static final Map<String, String> MY_MAP;
 	static {
 		Map<String, String> aMap = new HashMap<String, String>();

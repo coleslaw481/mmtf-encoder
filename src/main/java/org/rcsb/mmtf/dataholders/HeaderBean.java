@@ -60,8 +60,14 @@ public class HeaderBean {
 	/** The authors. */
 	private String authors;
 	
-	/** The sequence. */
+	/** The SEQRES sequence, per asym chain. */
 	private List<String> sequence;
+	
+	/** The SeqRes group ids. */
+	private List<Integer> seqResGroupIds;
+	
+	/** The experimental method(s). */
+	private List<String> experimentalMethods;
 	
 	/** The chains per model. */
 	// Add this to store the model information
@@ -526,5 +532,33 @@ public class HeaderBean {
 	 */
 	public void setAsymGroupsPerChain(int[] asymGroupsPerChain) {
 		this.asymGroupsPerChain = asymGroupsPerChain;
-	}	
+	}
+
+  /**
+   * @return the seqResGroupIds
+   */
+  public List<Integer> getSeqResGroupIds() {
+    return seqResGroupIds;
+  }
+
+  /**
+   * @param seqResGroupIds the seqResGroupIds to set
+   */
+  public void setSeqResGroupIds(List<Integer> seqResGroupIds) {
+    this.seqResGroupIds = seqResGroupIds;
+  }
+
+  /**
+   * @return the experimental methods
+   */
+  public List<String> getExperimentalMethods() {
+    return experimentalMethods;
+  }
+
+  /**
+   * @param experimentalMethods the experimental methods to set
+   */
+  public void setExperimentalMethods(List<String> experimentalMethods) {
+    this.experimentalMethods = experimentalMethods;
+  }	
 }
