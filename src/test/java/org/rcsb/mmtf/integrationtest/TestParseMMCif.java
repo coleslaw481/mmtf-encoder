@@ -183,34 +183,43 @@ public class TestParseMMCif {
    * @return
    */
   private void checkIfSeqResInfoSame(Structure biojavaStruct){
-
-    // Get the seqres group list
-    int[] decodedSeqResGroupList = decodeStructure.getSeqResGroupList();
-    int groupCounter = 0;
-    // Get the sequence information
-    for(int currentModelIndex = 0; currentModelIndex < biojavaStruct.nrModels(); currentModelIndex++){
-      for(Chain currentChain : biojavaStruct.getChains(currentModelIndex)){
-        List<Group> thisChainSeqResList = new ArrayList<>();
-        for(Group seqResGroup : currentChain.getSeqResGroups()){
-          thisChainSeqResList.add(seqResGroup);
-        }
-        // Now go through and check the indices line up
-        for(int i = 0; i < currentChain.getAtomGroups().size(); i++){
-          // Get the group
-          Group testGroup = currentChain.getAtomGroup(i);
-          int testGroupInd = thisChainSeqResList.indexOf(testGroup);
-          assertEquals(testGroupInd, decodedSeqResGroupList[groupCounter]);
-          groupCounter++;
+    if(params.isUseInternalChainId()){
+      // Get the seqres group list
+      int[] decodedSeqResGroupList = decodeStructure.getSeqResGroupList();
+      int groupCounter = 0;
+      // Get the sequence information
+      for(int currentModelIndex = 0; currentModelIndex < biojavaStruct.nrModels(); currentModelIndex++){
+        for(Chain currentChain : biojavaStruct.getChains(currentModelIndex)){
+          List<Group> thisChainSeqResList = new ArrayList<>();
+          for(Group seqResGroup : currentChain.getSeqResGroups()){
+            thisChainSeqResList.add(seqResGroup);
+          }
+          // Now go through and check the indices line up
+          for(int i = 0; i < currentChain.getAtomGroups().size(); i++){
+            // Get the group
+            Group testGroup = currentChain.getAtomGroup(i);
+            int testGroupInd = thisChainSeqResList.indexOf(testGroup);
+            assertEquals(testGroupInd, decodedSeqResGroupList[groupCounter]);
+            groupCounter++;
+          }
         }
       }
+    }
+    // Otherwise we need to parse in a different
+    else{
+      System.out.println("Using public facing chain ids -> seq res not tested");
     }
 
   }
 
 
-
+  /**
+   * Check if all features between the two structures  are the same
+   * @param biojavaStruct the input biojava structure parsed from the  mmcif file
+   * @param structTwo the BioJava structure parsed from the MMTF file
+   */
   private void checkIfStructuresSame(Structure biojavaStruct, Structure structTwo){
-    assertEquals(true, checkIfAtomsSame(biojavaStruct, structTwo));
+    assertTrue(checkIfAtomsSame(biojavaStruct, structTwo));
     checkIfSeqResInfoSame(biojavaStruct);
   }
 
