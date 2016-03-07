@@ -304,7 +304,7 @@ public class ParseFromBiojava {
 						// Set the one letter code
 						outGroup.setSingleLetterCode(currentGroup.getChemComp().getOne_letter_code());
 						// Set the group type
-						outGroup.setGroupType(currentGroup.getChemComp().getType());
+						outGroup.setChemCompType(currentGroup.getChemComp().getType());
 						outGroup.setGroupName(atomInfo.remove(0));
 						outGroup.setAtomInfo(atomInfo);
 						// Now get the bond list (lengths, orders and indices)
@@ -493,7 +493,7 @@ public class ParseFromBiojava {
 				PDBGroup outGroup = new PDBGroup();
 				outGroup.setSingleLetterCode(currentGroup.getChemComp().getOne_letter_code());
 				// 
-				outGroup.setGroupType(currentGroup.getChemComp().getType());
+				outGroup.setChemCompType(currentGroup.getChemComp().getType());
 				outGroup.setGroupName(calphaAtomInfo.remove(0));
 				outGroup.setAtomInfo(calphaAtomInfo);
 				// Now get the bond list (lengths, orders and indices) and atom charges
