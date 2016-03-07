@@ -261,6 +261,8 @@ public class TestParseMMCif {
         for(int k=0; k<groupsOne.size();k++){
           Group groupOne = groupsOne.get(k);
           Group groupTwo = groupsTwo.get(k);
+          // Check if the groups are of the same type
+          assertEquals(groupOne.getType(), groupTwo.getType());    
           // Get the first conf
           List<Atom> atomsOne = groupOne.getAtoms();
           List<Atom> atomsTwo = groupTwo.getAtoms();
