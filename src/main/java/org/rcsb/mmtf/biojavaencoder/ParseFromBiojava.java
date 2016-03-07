@@ -18,7 +18,6 @@ import org.biojava.nbio.structure.Chain;
 import org.biojava.nbio.structure.Element;
 import org.biojava.nbio.structure.ExperimentalTechnique;
 import org.biojava.nbio.structure.Group;
-import org.biojava.nbio.structure.GroupType;
 import org.biojava.nbio.structure.JournalArticle;
 import org.biojava.nbio.structure.PDBCrystallographicInfo;
 import org.biojava.nbio.structure.PDBHeader;
@@ -83,6 +82,9 @@ public class ParseFromBiojava {
 	
 	/** The calpha group / residue counter. */
 	private int calphaResCounter;	
+	
+	/** The Biojava group currently being parsed. */
+	private Group currentGroup;
 	
 	/** The Constant MY_MAP. Relates the group name to the type of atom id */
 	private static final Map<String, String> MY_MAP;
@@ -277,7 +279,8 @@ public class ParseFromBiojava {
 				// Get the groups
 				String currentChainId = biojavaChain.getChainID();
 				int numBonds = 0;
-				for (Group currentGroup : biojavaChain.getAtomGroups()) {
+				for (Group loopGroup : biojavaChain.getAtomGroups()) {
+				  currentGroup = loopGroup;
 				  // Set the seq res group id 
 				  headerStruct.getSeqResGroupIds().add(seqResGroups.indexOf(currentGroup));
 					// Get the pdb id
@@ -300,12 +303,8 @@ public class ParseFromBiojava {
 						PDBGroup outGroup = new PDBGroup();
 						// Set the one letter code
 						outGroup.setSingleLetterCode(currentGroup.getChemComp().getOne_letter_code());
-						if(atomInfo.remove(0)=="ATOM"){
-							outGroup.setHetFlag(false);
-						}
-						else{
-							outGroup.setHetFlag(true);
-						}
+						// Set the group type
+						outGroup.setGroupType(currentGroup.getChemComp().getType());
 						outGroup.setGroupName(atomInfo.remove(0));
 						outGroup.setAtomInfo(atomInfo);
 						// Now get the bond list (lengths, orders and indices)
@@ -343,12 +342,12 @@ public class ParseFromBiojava {
 						// Update the structure
 						addAtomInfo(currentAtom, currentChainId, res_id, residueNum, biojavaChain);
 						// Update the calpha
-						updateCalpha(currentGroup, cAlphaGroup, currentAtom);
+						updateCalpha(cAlphaGroup, currentAtom);
 						// Increment the atom counter
 						atomCounter+=1;
 					}
 					// Now add this group - if there is something to consider
-					addCalphaGroup(cAlphaGroup, props, residueNum, currentGroup.getChemComp().getOne_letter_code());
+					addCalphaGroup(cAlphaGroup, props, residueNum);
 				}
 				// Increment again by one
 				chainCounter+=1;
@@ -480,7 +479,7 @@ public class ParseFromBiojava {
 	 * @param residueNum the residue number Biojava objext
 	 * @param singleLetterCode the single letter code
 	 */
-	private void addCalphaGroup(List<Atom> cAlphaGroup,SecStrucState props, ResidueNumber residueNum, String singleLetterCode) {
+	private void addCalphaGroup(List<Atom> cAlphaGroup,SecStrucState props, ResidueNumber residueNum) {
 		// Generate a variable of the residue number
 		int thisResNum;
 		if(cAlphaGroup.size()>0){
@@ -492,14 +491,9 @@ public class ParseFromBiojava {
 			if (hashToCalphaRes.containsKey(calphaHashCode)==false){
 				// Make a new group
 				PDBGroup outGroup = new PDBGroup();
-				outGroup.setSingleLetterCode(singleLetterCode);
+				outGroup.setSingleLetterCode(currentGroup.getChemComp().getOne_letter_code());
 				// 
-				if(calphaAtomInfo.remove(0)=="ATOM"){
-					outGroup.setHetFlag(false);
-				}
-				else{
-					outGroup.setHetFlag(true);
-				}
+				outGroup.setGroupType(currentGroup.getChemComp().getType());
 				outGroup.setGroupName(calphaAtomInfo.remove(0));
 				outGroup.setAtomInfo(calphaAtomInfo);
 				// Now get the bond list (lengths, orders and indices) and atom charges
@@ -557,7 +551,7 @@ public class ParseFromBiojava {
 	 * @param cAlphaGroup the c alpha group
 	 * @param a the a
 	 */
-	private void updateCalpha(Group totG, List<Atom> cAlphaGroup, Atom a) {
+	private void updateCalpha(List<Atom> cAlphaGroup, Atom a) {
 		// NOW THE CALPHA / PHOSPHATE / LIGAND STUFF
 		// GET THE CALPHA
 		if (a.getName().equals("CA") && a.getElement().toString().equals("C")){
@@ -569,7 +563,7 @@ public class ParseFromBiojava {
 			cAlphaGroup.add(a);
 		}
 		// GET THE LIGANDS
-		if(totG.isWater()==false && totG.getType().name().equals("HETATM")){
+		if(currentGroup.isWater()==false && currentGroup.getType().name().equals("HETATM")){
 			cAlphaGroup.add(a);
 		}
 	}
@@ -772,12 +766,7 @@ public class ParseFromBiojava {
 		int numAtoms = atomList.size();
 		int arraySize = numAtoms*2+2;
 		List<String> outString = new ArrayList<String>(arraySize);
-		GroupType gType = atomList.get(0).getGroup().getType();
-		// A string indicating if it is HETARM or ATOM
-		String gS = gType.toString();
-		String gss = MY_MAP.get(gS);
-		// A
-		outString.add(gss);
+		// Get the group name
 		outString.add(atomList.get(0).getGroup().getPDBName());
 		for (Atom a: atomList){
 			outString.add(a.getElement().toString());
