@@ -107,10 +107,18 @@ public class TestParseMMCif {
     // Ribosome
     pdbId = "4v5a";
     checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
-    
     // Biosynthetic protein
     pdbId = "5emg";
     checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
+    // Calpha atom is missing (not marked as calpha)
+    pdbId = "1lpv";
+    checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
+    // NMR structure with multiple models - one of which has chain missing
+    pdbId = "1msh";
+    checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));  
+    // No ATOM records just HETATM records (in PDB). Opposite true for MMCif. It's a D-Peptide.
+    pdbId = "1r9v";
+    checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));  
   }
 
   /**
