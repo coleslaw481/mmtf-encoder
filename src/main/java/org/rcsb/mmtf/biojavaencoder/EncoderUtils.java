@@ -98,7 +98,7 @@ public class EncoderUtils implements Serializable {
 	 * @throws IOException reading byte array
 	 * @throws Exception 
 	 */
-	public byte[] compressMainData(BioDataStruct inStruct, HeaderBean inHeader) throws IOException {
+	public MmtfBean compressMainData(BioDataStruct inStruct, HeaderBean inHeader) throws IOException {
 		EncoderUtils cm = new EncoderUtils();
 		// Compress the protein 
 		CoreSingleStructure strucureData = compressHadoopStruct(inStruct);
@@ -110,18 +110,18 @@ public class EncoderUtils implements Serializable {
 		thisDistBeanTot.setInsCodeList(bioBean.get_atom_site_pdbx_PDB_ins_code());
 		thisDistBeanTot.setAltLabelList(bioBean.get_atom_site_label_alt_id());
 		// Copy the asym data
-		thisDistBeanTot.setInternalChainList(inHeader.getAsymChainList());
-		thisDistBeanTot.setInternalChainsPerModel(inHeader.getAsymChainsPerModel());
-		thisDistBeanTot.setInternalGroupsPerChain(inHeader.getAsymGroupsPerChain());
+		thisDistBeanTot.setChainIdList(inHeader.getAsymChainList());
+		thisDistBeanTot.setChainsPerModel(inHeader.getAsymChainsPerModel());
+		thisDistBeanTot.setGroupsPerChain(inHeader.getAsymGroupsPerChain());
 		// Get the seqres information
-		thisDistBeanTot.setSeqResGroupIds(cm.integersToBytes(runLengthComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) inHeader.getSeqResGroupIds()))));
-		thisDistBeanTot.setSequence(inHeader.getSequence());
+		thisDistBeanTot.setSeqResIdList(cm.integersToBytes(runLengthComp.compressIntArray(deltaComp.compressIntArray((ArrayList<Integer>) inHeader.getSeqResGroupIds()))));
+		thisDistBeanTot.setChainSeqList(inHeader.getSequence());
 		thisDistBeanTot.setExperimentalMethods(inHeader.getExperimentalMethods());
 		// Now get this list
 		thisDistBeanTot.setBondAtomList(cm.integersToBytes(inStruct.getInterGroupBondInds()));
 		thisDistBeanTot.setBondOrderList(cm.integersToSmallBytes(inStruct.getInterGroupBondOrders()));
 		// Now get these from the headers
-		thisDistBeanTot.setChainList(inHeader.getChainList());
+		thisDistBeanTot.setChainNameList(inHeader.getChainList());
 		thisDistBeanTot.setNumAtoms(inHeader.getNumAtoms());
 		thisDistBeanTot.setNumBonds(inHeader.getNumBonds());
 		// Now get the Xtalographic info from this header
@@ -135,10 +135,7 @@ public class EncoderUtils implements Serializable {
 		addByteArrs(thisDistBeanTot, bioBean);
 		// Now set the version
 		thisDistBeanTot.setMmtfProducer("RCSB-PDB Generator---version: "+grs.getCurrentVersion());
-		// Now package as a MPF
-		byte[] inBuf = getMessagePack(thisDistBeanTot);
-		// NO GZIP YET
-		return inBuf;
+		return thisDistBeanTot;
 	}
 
 	/**
@@ -172,7 +169,7 @@ public class EncoderUtils implements Serializable {
 		// Now the secondary structure
 		thisDistBeanTot.setSecStructList(cm.integersToSmallBytes(bioBean.getSecStruct()));
 		// Now set the group num list
-		thisDistBeanTot.setGroupNumList(cm.integersToBytes(bioBean.get_atom_site_auth_seq_id()));
+		thisDistBeanTot.setGroupIdList(cm.integersToBytes(bioBean.get_atom_site_auth_seq_id()));
 	}
 
 

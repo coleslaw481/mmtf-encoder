@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.biojava.nbio.structure.Structure;
+import org.rcsb.mmtf.dataholders.MmtfBean;
 import org.rcsb.mmtf.dataholders.PDBGroup;
 
 public class EncodeStructure {
@@ -48,8 +49,8 @@ public class EncodeStructure {
 	   EncoderUtils eu = new EncoderUtils();
 	   // Compress the data and get it back out
     try {
-      byte[] outArr = eu.compressMainData(parsedDataStruct.getBioStruct(), parsedDataStruct.getHeaderStruct());
-      return outArr;
+      MmtfBean mmtfBean = eu.compressMainData(parsedDataStruct.getBioStruct(), parsedDataStruct.getHeaderStruct());
+      return eu.getMessagePack(mmtfBean);
     } catch (IOException e) {
       // Here we've failed to read or write a byte array
       e.printStackTrace();
