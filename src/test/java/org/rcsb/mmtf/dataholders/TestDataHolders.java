@@ -67,6 +67,9 @@ public class TestDataHolders {
     testDataRoundTrip(MmtfBean.class);
     // Now test if all fields in the mmtf are generated
     testDataComplete("4cup");
+    // Now check that the failure bean fails this
+    // Now test round tripping data
+    assertFalse(testDataRoundTrip(FailureBean.class));
   }
 
   @SuppressWarnings("unchecked")
@@ -114,7 +117,7 @@ public class TestDataHolders {
    * Test round tripping dummy data
    * @param class1
    */
-  private void testDataRoundTrip(@SuppressWarnings("rawtypes") Class class1) {
+  private  boolean testDataRoundTrip(@SuppressWarnings("rawtypes") Class class1) {
     Object inBean = factory.manufacturePojo(class1);
     byte[] outArr = null;
 
@@ -137,10 +140,21 @@ public class TestDataHolders {
       System.out.println("Weird IO exceptipn on reading byte array...");
       e.printStackTrace();
     }
+    // Make the failure bean fail
+    try{
+    ReflectionAssert.assertPropertyReflectionEquals("fieldWithNoGetters",null, outBean);
+    ReflectionAssert.assertPropertyReflectionEquals("fieldWithRefactoredGetters",null, outBean);
+    return false;
+    }
+    catch(Exception e){
+      
+    }
     // Make sure all fields are re-populated
     ReflectionAssert.assertPropertiesNotNull("Some properties are null in re-read object", outBean);
+    
     // Now check they're the same
     ReflectionAssert.assertReflectionEquals(inBean, outBean); 
+    return true;
   } 
 
   /**
