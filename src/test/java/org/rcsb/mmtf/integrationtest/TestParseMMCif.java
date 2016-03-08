@@ -107,7 +107,11 @@ public class TestParseMMCif {
     checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));		
     // Ribosome
     pdbId = "4v5a";
-    checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));		
+    checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
+    
+    // Biosynthetic protein
+    pdbId = "5emg";
+    checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
   }
 
   /**
