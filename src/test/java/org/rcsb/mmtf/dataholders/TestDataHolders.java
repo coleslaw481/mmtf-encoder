@@ -21,7 +21,7 @@ import org.rcsb.mmtf.biojavaencoder.EncoderUtils;
 import org.rcsb.mmtf.biojavaencoder.ParseFromBiojava;
 import org.unitils.reflectionassert.ReflectionAssert;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -54,7 +54,7 @@ public class TestDataHolders {
   }
 
   @Test
-  public void testSerializable() {
+  public void testSerializable() throws JsonParseException, JsonMappingException, IOException {
     // MmtfBean
     assertTrue(testClass(MmtfBean.class));
     // This one fails - make sure it still does
@@ -73,7 +73,7 @@ public class TestDataHolders {
   }
 
   @SuppressWarnings("unchecked")
-  private boolean testClass(@SuppressWarnings("rawtypes") Class class1) {
+  private boolean testClass(@SuppressWarnings("rawtypes") Class class1) throws IOException {
 
 
     Object inBean = null;
@@ -81,17 +81,11 @@ public class TestDataHolders {
       inBean = class1.newInstance();
     } catch (InstantiationException | IllegalAccessException e2) {
       // Weirdness
-      System.out.println("Weirdness in generating instance of generic class");
-      e2.printStackTrace();
+      org.junit.Assert.fail("Weirdness in generating instance of generic class");
     }
     byte[] outArr = null;
 
-    try {
-      outArr = encoderUtils.getMessagePack(inBean);
-    } catch (JsonProcessingException e1) {
-      System.out.println("Error generating messagepack");
-      e1.printStackTrace();
-    }
+    outArr = encoderUtils.getMessagePack(inBean);
 
     // 
     Object  outBean = null;
@@ -100,11 +94,6 @@ public class TestDataHolders {
     } catch( JsonMappingException jsonE){
       System.out.println("Error reading messagepack - is part of test if test doesn't fail");
       return false;
-    }
-    catch (IOException e) {
-      // This would be very weird
-      System.out.println("Weird IO exceptipn on reading byte array...");
-      e.printStackTrace();
     }
 
     // Now check they're the same
@@ -117,29 +106,17 @@ public class TestDataHolders {
    * Test round tripping dummy data
    * @param class1
    */
-  private  boolean testDataRoundTrip(@SuppressWarnings("rawtypes") Class class1) {
+  private  boolean testDataRoundTrip(@SuppressWarnings("rawtypes") Class class1) throws JsonParseException, JsonMappingException, IOException {
     Object inBean = factory.manufacturePojo(class1);
     byte[] outArr = null;
 
-    try {
-      outArr = encoderUtils.getMessagePack(inBean);
-    } catch (JsonProcessingException e1) {
-      System.out.println("Error generating messagepack");
-      e1.printStackTrace();
-    }
+    outArr = encoderUtils.getMessagePack(inBean);
+
 
     // 
     Object  outBean = null;
-    try {
-      outBean = new ObjectMapper(new  MessagePackFactory()).readValue(outArr, class1);
-    } catch( JsonMappingException jsonE){
-      System.out.println("Error reading messagepack.");
-    }
-    catch (IOException e) {
-      // This would be very weird
-      System.out.println("Weird IO exceptipn on reading byte array...");
-      e.printStackTrace();
-    }
+    outBean = new ObjectMapper(new  MessagePackFactory()).readValue(outArr, class1);
+
     // Make the failure bean fail
     try{
       ReflectionAssert.assertPropertyReflectionEquals("fieldWithNoGetters",null, outBean);
@@ -162,7 +139,7 @@ public class TestDataHolders {
    * @throws StructureException 
    * @throws IOException 
    */
-  private void testDataComplete(String pdbId) {
+  private void testDataComplete(String pdbId) throws IOException {
 
     // Utility functions for encoding stuff
     EncoderUtils eu = new EncoderUtils();
@@ -173,14 +150,7 @@ public class TestDataHolders {
     parsedDataStruct.createFromJavaStruct(pdbId, totMap);
     MmtfBean mmtfBean = null;
     // Compress the data and get it back out
-    try {
-      mmtfBean = eu.compressMainData(parsedDataStruct.getBioStruct(), parsedDataStruct.getHeaderStruct());
-    } catch (IOException e) {
-      // Here we've failed to read or write a byte array
-      e.printStackTrace();
-      System.err.println("Error reading or writing byte array - file bug report");
-      throw new RuntimeException(e);
-    }
+    mmtfBean = eu.compressMainData(parsedDataStruct.getBioStruct(), parsedDataStruct.getHeaderStruct());
     // Make sure all fields are re-populated
     ReflectionAssert.assertPropertiesNotNull("Some properties are null in mmtf generated from biojava object",  mmtfBean);
     // Now check the standard ones have been set
