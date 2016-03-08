@@ -2,6 +2,7 @@ package org.rcsb.mmtf.dataholders;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -141,16 +142,16 @@ public class TestDataHolders {
     }
     // Make the failure bean fail
     try{
-    ReflectionAssert.assertPropertyReflectionEquals("fieldWithNoGetters",null, outBean);
-    ReflectionAssert.assertPropertyReflectionEquals("fieldWithRefactoredGetters",null, outBean);
-    return false;
+      ReflectionAssert.assertPropertyReflectionEquals("fieldWithNoGetters",null, outBean);
+      ReflectionAssert.assertPropertyReflectionEquals("fieldWithRefactoredGetters",null, outBean);
+      return false;
     }
     catch(Exception e){
-      
+
     }
     // Make sure all fields are re-populated
     ReflectionAssert.assertPropertiesNotNull("Some properties are null in re-read object", outBean);
-    
+
     // Now check they're the same
     ReflectionAssert.assertReflectionEquals(inBean, outBean); 
     return true;
@@ -162,7 +163,7 @@ public class TestDataHolders {
    * @throws IOException 
    */
   private void testDataComplete(String pdbId) {
-    
+
     // Utility functions for encoding stuff
     EncoderUtils eu = new EncoderUtils();
     // Get the utility class to get the structures
@@ -182,6 +183,14 @@ public class TestDataHolders {
     }
     // Make sure all fields are re-populated
     ReflectionAssert.assertPropertiesNotNull("Some properties are null in mmtf generated from biojava object",  mmtfBean);
+    // Now check the standard ones have been set
+    assertNotEquals(mmtfBean.getResolution(), (float) -1.0);
+    assertNotEquals(mmtfBean.getrFree(), (float) -1.0);
+    // Check that these integer values are set
+    assertNotEquals(mmtfBean.getNumAtoms(), -1);
+    assertNotEquals(mmtfBean.getNumBonds(), -1);
+    // And finally - check this is working
+    assertNotEquals(mmtfBean.getMmtfProducer(), "NA");
   }
 }
 

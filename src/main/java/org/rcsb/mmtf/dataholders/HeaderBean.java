@@ -48,11 +48,14 @@ public class HeaderBean {
 	/** The modified date. */
 	private Date modDate;
 	
-	/** The resolution. */
+	/** The resolution.-1.0 if not available */
 	private float resolution;
 	
-	/** The r free. */
+	/** The r free. -1.0 if not available*/
 	private float rFree;
+	
+	 /** The r work. -1.0 if not available */
+  private float rWork;
 	
 	/** The doi. */
 	private String doi;
@@ -100,8 +103,16 @@ public class HeaderBean {
 	
 	/** The bio assembly. */
 	private Map<Integer, BioAssemblyInfoNew> bioAssembly = new HashMap<Integer, BioAssemblyInfoNew>(); 
+	  
+	public HeaderBean() {
+	  resolution = (float) -1.0;
+	  
+	  rFree = (float) -1.0;
+	  
+	  rWork = (float) -1.0;
+	}
+
 	// Getters and setters
-	
 	/**
 	 * Gets the number of chains.
 	 *
@@ -560,5 +571,19 @@ public class HeaderBean {
    */
   public void setExperimentalMethods(List<String> experimentalMethods) {
     this.experimentalMethods = experimentalMethods;
+  }
+
+  /**
+   * @return the rWork
+   */
+  public float getrWork() {
+    return rWork;
+  }
+
+  /**
+   * @param rWork the rWork to set
+   */
+  public void setrWork(float rWork) {
+    this.rWork = rWork;
   }	
 }

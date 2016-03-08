@@ -109,6 +109,10 @@ public class EncoderUtils implements Serializable {
 		thisDistBeanTot.setPdbId(bioBean.getPdbCode());
 		thisDistBeanTot.setInsCodeList(bioBean.get_atom_site_pdbx_PDB_ins_code());
 		thisDistBeanTot.setAltLabelList(bioBean.get_atom_site_label_alt_id());
+		// Set this experimental data
+		thisDistBeanTot.setResolution(inHeader.getResolution());
+    thisDistBeanTot.setrFree(inHeader.getrFree());
+    thisDistBeanTot.setrWork(inHeader.getrWork());
 		// Copy the asym data
 		thisDistBeanTot.setChainIdList(inHeader.getAsymChainList());
 		thisDistBeanTot.setChainsPerModel(inHeader.getAsymChainsPerModel());

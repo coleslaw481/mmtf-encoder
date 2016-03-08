@@ -434,6 +434,7 @@ public class ParseFromBiojava {
     headerStruct.setModDate(header.getModDate());
     headerStruct.setResolution(header.getResolution());
     headerStruct.setrFree(header.getRfree());
+
     JournalArticle myJournal = header.getJournalArticle();
     try{
       headerStruct.setDoi(myJournal.getDoi());
