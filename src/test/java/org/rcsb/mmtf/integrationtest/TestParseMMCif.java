@@ -186,10 +186,15 @@ public class TestParseMMCif {
     if(params.isUseInternalChainId()){
       // Get the seqres group list
       int[] decodedSeqResGroupList = decodeStructure.getSeqResGroupList();
+      // Get the string sequences
+      List<String> sequenceStrings = decodeStructure.getSequenceInfo();
       int groupCounter = 0;
+      int chainCounter = 0;
       // Get the sequence information
       for(int currentModelIndex = 0; currentModelIndex < biojavaStruct.nrModels(); currentModelIndex++){
         for(Chain currentChain : biojavaStruct.getChains(currentModelIndex)){
+          // Get the sequence
+          assertEquals(sequenceStrings.get(chainCounter), currentChain.getSeqResSequence());
           List<Group> thisChainSeqResList = new ArrayList<>();
           for(Group seqResGroup : currentChain.getSeqResGroups()){
             thisChainSeqResList.add(seqResGroup);
@@ -202,6 +207,7 @@ public class TestParseMMCif {
             assertEquals(testGroupInd, decodedSeqResGroupList[groupCounter]);
             groupCounter++;
           }
+          chainCounter++;
         }
       }
     }
@@ -233,6 +239,8 @@ public class TestParseMMCif {
   private boolean checkIfAtomsSame(Structure structOne, Structure structTwo) {
     // Firt check the bioassemblies
     checkIfBioassemblySame(structOne, structTwo);
+    // Now check the sequence
+    checkIfSequenceSame(structOne, structTwo);
     int numModels = structOne.nrModels();
     if(numModels!=structTwo.nrModels()){
       System.out.println("ERROR - diff number models");
@@ -309,6 +317,8 @@ public class TestParseMMCif {
               }
               else if(atomOne.getBonds().size()!=atomTwo.getBonds().size()){
                 System.out.println("DIFFERENT NUMBER OF BONDS: "+atomOne.getBonds().size()+" VS "+atomTwo.getBonds().size());
+                System.out.println(atomOne);
+                System.out.println(atomTwo);
                 return false;
               }
             }
