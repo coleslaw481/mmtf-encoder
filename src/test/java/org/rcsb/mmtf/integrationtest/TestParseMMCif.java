@@ -40,7 +40,6 @@ public class TestParseMMCif {
   private FileParsingParameters params;
 
   public TestParseMMCif(){
-
     cache = new AtomCache();
     cache.setUseMmCif(true);
     cache.setFetchBehavior(FetchBehavior.FETCH_FILES);

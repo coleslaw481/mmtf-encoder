@@ -98,7 +98,7 @@ public class EncoderUtils implements Serializable {
 	 * @throws IOException reading byte array
 	 * @throws Exception 
 	 */
-	public byte[] compressMainData(BioDataStruct inStruct, HeaderBean inHeader) throws IOException {
+	public MmtfBean compressMainData(BioDataStruct inStruct, HeaderBean inHeader) throws IOException {
 		EncoderUtils cm = new EncoderUtils();
 		// Compress the protein 
 		CoreSingleStructure strucureData = compressHadoopStruct(inStruct);
@@ -135,10 +135,7 @@ public class EncoderUtils implements Serializable {
 		addByteArrs(thisDistBeanTot, bioBean);
 		// Now set the version
 		thisDistBeanTot.setMmtfProducer("RCSB-PDB Generator---version: "+grs.getCurrentVersion());
-		// Now package as a MPF
-		byte[] inBuf = getMessagePack(thisDistBeanTot);
-		// NO GZIP YET
-		return inBuf;
+		return thisDistBeanTot;
 	}
 
 	/**

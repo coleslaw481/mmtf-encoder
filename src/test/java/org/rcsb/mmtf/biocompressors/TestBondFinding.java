@@ -27,11 +27,11 @@ public class TestBondFinding {
     // Normal
     assertEquals(getInterBonds("1QMZ"), 2236);
     // 	Disulphide
-    assertEquals(getInterBonds("2QWO"), 954);
+    assertEquals(getInterBonds("2QWO"), 956);
     // Covalent ligand
-    assertEquals(getInterBonds("4QDV"), 2290);
+    assertEquals(getInterBonds("4QDV"), 2294);
     // DNA 
-    assertEquals(getInterBonds("4XSN"), 0);
+    assertEquals(getInterBonds("4XSN"), 9);
 
   }
 
