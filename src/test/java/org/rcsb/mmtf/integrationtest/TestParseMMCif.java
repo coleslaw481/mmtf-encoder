@@ -240,7 +240,6 @@ public class TestParseMMCif {
     // Firt check the bioassemblies
     checkIfBioassemblySame(structOne, structTwo);
     // Now check the sequence
-    checkIfSequenceSame(structOne, structTwo);
     int numModels = structOne.nrModels();
     if(numModels!=structTwo.nrModels()){
       System.out.println("ERROR - diff number models");
