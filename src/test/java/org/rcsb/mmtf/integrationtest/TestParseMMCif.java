@@ -130,7 +130,7 @@ public class TestParseMMCif {
     byte[] inArr = FileUtils.readFileToByteArray(new File("pathname"));
     // Now do the checks on the Raw data
     CheckOnRawApi checkRaw = new CheckOnRawApi(inArr);
-    checkRaw.checkIfSeqResInfoSame(mmcifStruct, params);
+    checkRaw.checkRawDataConsistency(mmcifStruct, params);
     // Now decode the data and return this new structure
     BioJavaStructureDecoder bjsi = new BioJavaStructureDecoder();
     decodeStructure = new DecodeStructure(inArr);
