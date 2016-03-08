@@ -37,7 +37,6 @@ public class TestDataHolders {
   public TestDataHolders() {
     encoderUtils = new EncoderUtils();
     factory = new PodamFactoryImpl(); 
-
     cache = new AtomCache();
     cache.setUseMmCif(true);
     cache.setFetchBehavior(FetchBehavior.FETCH_FILES);
@@ -166,7 +165,7 @@ public class TestDataHolders {
     
     // Utility functions for encoding stuff
     EncoderUtils eu = new EncoderUtils();
-    // Get the utility class to get the strucutes
+    // Get the utility class to get the structures
     ParseFromBiojava parsedDataStruct = new ParseFromBiojava();
     Map<Integer, PDBGroup> totMap = new HashMap<Integer, PDBGroup>();
     // Parse the data into the basic data structure

@@ -20,9 +20,7 @@ public class GetRepoState implements Serializable{
 	{
 		Properties properties = new Properties();
 		properties.load(getClass().getClassLoader().getResourceAsStream("git.properties"));
-
 		GitRepositoryState gitRepositoryState = new GitRepositoryState(properties);
-
 		return gitRepositoryState;
 	}
 
