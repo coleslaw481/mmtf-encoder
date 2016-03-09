@@ -40,7 +40,6 @@ public class TestParseMMCif {
     ChemCompGroupFactory.setChemCompProvider(dcc);
     dcc.setDownloadAll(true);
     dcc.checkDoFirstInstall();
-    params.setLoadChemCompInfo(true);
     params.setUseInternalChainId(true);
     checkEquiv = new CheckOnBiojava();
   }
