@@ -424,7 +424,6 @@ public class ParseFromBiojava {
     }
     // GET THE HEADER INFORMATION
     PDBHeader header = bioJavaStruct.getPDBHeader();
-
     Map<Integer, BioAssemblyInfoNew> outMap = generateSerializableBioAssembly(bioJavaStruct, header);
     headerStruct.setBioAssembly(outMap);
     headerStruct.setTitle(header.getTitle());
@@ -436,11 +435,11 @@ public class ParseFromBiojava {
     headerStruct.setrFree(header.getRfree());
 
     JournalArticle myJournal = header.getJournalArticle();
-    if( myJournal.getDoi()==null){
-      
+    if( myJournal==null){
+
     }
     else{
-     headerStruct.setDoi(myJournal.getDoi());
+      headerStruct.setDoi(myJournal.getDoi());
     }
   }
 
@@ -794,7 +793,7 @@ public class ParseFromBiojava {
           Atom other = currentBond.getOther(currentAtom);
           int index = inputAtomsInThisGroup.indexOf(other);
           int order = currentBond.getBondOrder();
-          if (index<0 || index>=totAtoms.size()){
+          if (index<0 || index >= totAtoms.size()){
             // Get the index of hte atom ins the total list
             int newInd = totAtoms.indexOf(other);
             if(newInd > -1){

@@ -50,6 +50,7 @@ public class TestParseMMCif {
     // Set the params
     params.setUseInternalChainId(true);
     cache.setFileParsingParams(params);
+    StructureIO.setAtomCache(cache);
     testAll();
   }
 
@@ -58,6 +59,7 @@ public class TestParseMMCif {
     // Set the params
     params.setUseInternalChainId(false);
     cache.setFileParsingParams(params);
+    StructureIO.setAtomCache(cache);
     testAll();
   }
 
@@ -77,36 +79,47 @@ public class TestParseMMCif {
     String pdbId;
     //Standard structure
     pdbId ="4cup";
+    checkEquiv = new CheckOnBiojava();
     checkEquiv.checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
     // Weird NMR structure
     pdbId ="1o2f";
+    checkEquiv = new CheckOnBiojava();
     checkEquiv.checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
     // Another weird structure (jose's suggestion) 
     pdbId ="3zyb";
+    checkEquiv = new CheckOnBiojava();
     checkEquiv.checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
     // B-DNA structure
     pdbId ="1bna";
+    checkEquiv = new CheckOnBiojava();
     checkEquiv.checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));	
     // DNA structure
     pdbId = "4y60";
+    checkEquiv = new CheckOnBiojava();
     checkEquiv.checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
     // Sugar structure
     pdbId = "1skm";
+    checkEquiv = new CheckOnBiojava();
     checkEquiv.checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));		
     // Ribosome
     pdbId = "4v5a";
+    checkEquiv = new CheckOnBiojava();
     checkEquiv.checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
     // Biosynthetic protein
     pdbId = "5emg";
+    checkEquiv = new CheckOnBiojava();
     checkEquiv.checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
     // Calpha atom is missing (not marked as calpha)
     pdbId = "1lpv";
+    checkEquiv = new CheckOnBiojava();
     checkEquiv.checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));
     // NMR structure with multiple models - one of which has chain missing
     pdbId = "1msh";
+    checkEquiv = new CheckOnBiojava();
     checkEquiv.checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));  
     // No ATOM records just HETATM records (in PDB). Opposite true for MMCif. It's a D-Peptide.
     pdbId = "1r9v";
+    checkEquiv = new CheckOnBiojava();
     checkEquiv.checkIfStructuresSame(StructureIO.getStructure(pdbId),roundTripStruct(pdbId, pp));  
   }
 
@@ -123,6 +136,7 @@ public class TestParseMMCif {
     boolean oldValue = params.isUseInternalChainId();
     params.setUseInternalChainId(true);
     cache.setFileParsingParams(params);
+    StructureIO.setAtomCache(cache);
     EncodeStructure es = new EncodeStructure();
     Structure mmcifStruct  = StructureIO.getStructure(pdbId);
     FileUtils.writeByteArrayToFile(new File("pathname"), es.encodeFromBiojava(mmcifStruct));
@@ -138,6 +152,7 @@ public class TestParseMMCif {
     // Revert back
     params.setUseInternalChainId(oldValue);
     cache.setFileParsingParams(params);
+    StructureIO.setAtomCache(cache);
     return struct;
   }
 
