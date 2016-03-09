@@ -436,13 +436,12 @@ public class ParseFromBiojava {
     headerStruct.setrFree(header.getRfree());
 
     JournalArticle myJournal = header.getJournalArticle();
-    try{
-      headerStruct.setDoi(myJournal.getDoi());
+    if( myJournal.getDoi()==null){
+      
     }
-    catch(NullPointerException e){
-
+    else{
+     headerStruct.setDoi(myJournal.getDoi());
     }
-
   }
 
 
